@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinical OS Admin — Dashboard</title>
+  <!-- Prefer loading AdminLTE/Tabler CSS from sibling kit after npm build.
+       This stub is self-contained so you can open it immediately. -->
+  <style>
+    :root { --bg:#e8efeb; --card:#fff; --ink:#0f1c18; --accent:#0b5f4b; --muted:#5a6b64; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+    .layout { display:grid; grid-template-columns: 240px 1fr; min-height:100vh; }
+    aside { background:linear-gradient(180deg,#0d3f34,#0a2f27); color:#dff7ee; padding:20px 16px; }
+    .brand-row { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+    .brand-row img { width:36px; height:36px; border-radius:8px; object-fit:cover; }
+    aside h1 { font-size:1.05rem; margin:0; }
+    aside a { display:block; color:#b7e8d6; text-decoration:none; padding:8px 10px; border-radius:8px; margin-bottom:4px; }
+    aside a.active, aside a:hover { background:rgba(255,255,255,.08); color:#fff; }
+    main { padding:24px; }
+    .grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; }
+    .card { background:var(--card); border-radius:12px; padding:16px; border:1px solid #d7e3dd; }
+    .card .label { color:var(--muted); font-size:.85rem; }
+    .card .value { font-size:1.8rem; font-weight:700; color:var(--accent); margin-top:6px; }
+    table { width:100%; border-collapse:collapse; margin-top:18px; background:#fff; border-radius:12px; overflow:hidden; }
+    th, td { text-align:left; padding:10px 12px; border-bottom:1px solid #e6eeea; font-size:.95rem; }
+    th { background:#eef5f1; color:var(--muted); font-weight:600; }
+    @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand-row">
+        <img src="assets/logo.jpg" alt="Clinical OS" />
+        <h1>Clinical OS Admin</h1>
+      </div>
+      <a class="active" href="dashboard.html">Dashboard</a>
+      <a href="doctors.html">Doctors</a>
+      <a href="chambers.html">Chambers</a>
+      <a href="drug-kb.html">Drug KB</a>
+      <a href="audit-logs.html">Audit logs</a>
+      <a href="settings.html">Settings</a>
+      <p style="margin-top:24px;font-size:.8rem;opacity:.7">Replace sidebar with AdminLTE/Tabler nav when integrating.</p>
+    </aside>
+    <main>
+      <h2 style="margin-top:0">Platform overview</h2>
+      <div class="grid">
+        <div class="card"><div class="label">Active doctors</div><div class="value">128</div></div>
+        <div class="card"><div class="label">Rx today</div><div class="value">1,042</div></div>
+        <div class="card"><div class="label">Offline sync pending</div><div class="value">17</div></div>
+        <div class="card"><div class="label">Drug KB products</div><div class="value">49,826</div></div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Time</th><th>Event</th><th>Actor</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>11:42</td><td>Rx signed RX-2026-000148</td><td>Dr. Ayesha Rahman</td><td>OK</td></tr>
+          <tr><td>11:38</td><td>Drug KB sync</td><td>system</td><td>OK</td></tr>
+          <tr><td>11:21</td><td>Assistant login (chamber Dhanmondi)</td><td>reza.assistant</td><td>OK</td></tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>

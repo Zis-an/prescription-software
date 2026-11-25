@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "desktop:build-main",
+      "type": "npm",
+      "script": "build:main",
+      "path": "apps/desktop",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "desktop:dev",
+      "type": "npm",
+      "script": "dev",
+      "path": "apps/desktop",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "docs:sync-developer",
+      "type": "shell",
+      "command": "python scripts/sync-developer-doc.py",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "none",
+      "problemMatcher": []
+    }
+  ]
+}

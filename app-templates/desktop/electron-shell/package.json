@@ -1,0 +1,16 @@
+{
+  "name": "clinical-os-desktop-shell",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Unbound Electron desktop shell — loads your web admin/frontend templates. MIT-style project stub; no vendor UI lock-in.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:admin": "cross-env CLINICAL_OS_ENTRY=admin electron .",
+    "start:frontend": "cross-env CLINICAL_OS_ENTRY=frontend electron ."
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.0"
+  }
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinical OS Admin — Drug KB</title>
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .filters { display:grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap:10px; margin-top:14px; align-items:end; }
+    .filters label { display:grid; gap:6px; font-size:.85rem; color:var(--muted); }
+    .filters input, .filters select { padding:8px 10px; border:1px solid #c9d5cf; border-radius:8px; font:inherit; background:#fff; }
+    .stats { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .stat { background:#fff; border:1px solid #d7e3dd; border-radius:10px; padding:10px 12px; min-width:120px; }
+    .stat .k { font-size:.75rem; color:var(--muted); text-transform:uppercase; }
+    .stat .v { font-size:1.15rem; font-weight:700; color:var(--accent); }
+    .table-wrap { max-height:62vh; overflow:auto; margin-top:14px; border:1px solid #d7e3dd; border-radius:12px; background:#fff; }
+    table { margin-top:0; }
+    th { position:sticky; top:0; z-index:1; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside data-nav="drug-kb"></aside>
+    <main>
+      <div class="bar">
+        <h2>DGDA Drug Knowledge Base</h2>
+        <button type="button" id="btn-reimport-hint">Import source</button>
+      </div>
+      <p class="muted" id="kb-blurb">Offline pack used by the doctor workbench. Regenerated from the Bangladesh DGDA register.</p>
+      <div class="stats" id="stats"></div>
+      <div class="filters">
+        <label>Search
+          <input id="q" type="search" placeholder="Brand, generic, manufacturer, DAR…" autofocus />
+        </label>
+        <label>System
+          <select id="system">
+            <option value="Allopathic" selected>Allopathic</option>
+            <option value="Ayurvedic">Ayurvedic</option>
+            <option value="Herbal">Herbal</option>
+            <option value="Homeopathic & Biochemic">Homeopathic</option>
+            <option value="Unani">Unani</option>
+            <option value="">All systems</option>
+          </select>
+        </label>
+        <label>Rows
+          <select id="limit">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <button type="button" id="btn-search">Search</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Generic</th>
+              <th>Strength</th>
+              <th>Form</th>
+              <th>Manufacturer</th>
+              <th>System</th>
+              <th>DAR</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script src="../../frontend/clinical-os-doctor/data/dgda-drugs.js"></script>
+  <script src="../../frontend/clinical-os-doctor/drug-kb.js"></script>
+  <script src="nav.js"></script>
+  <script>
+    const api = window.ClinicalOSDrugAPI;
+    const els = {
+      stats: document.getElementById("stats"),
+      blurb: document.getElementById("kb-blurb"),
+      q: document.getElementById("q"),
+      system: document.getElementById("system"),
+      limit: document.getElementById("limit"),
+      tbody: document.getElementById("tbody"),
+    };
+
+    function esc(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function renderStats() {
+      if (!api || !api.ready()) {
+        els.blurb.textContent = "DGDA pack missing. Run scripts/import-dgda-medicines.py";
+        return;
+      }
+      const m = api.meta();
+      const chips = [
+        ["Products", Number(m.count || 0).toLocaleString()],
+        ...Object.entries(m.bySystem || {}).map(([k, v]) => [k, Number(v).toLocaleString()]),
+      ];
+      els.stats.innerHTML = chips
+        .map(
+          ([k, v]) =>
+            `<div class="stat"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`
+        )
+        .join("");
+      els.blurb.textContent =
+        "Source: " +
+        (m.source || "DGDA") +
+        " · generated " +
+        (m.generatedAt || "—") +
+        " · doctor offline pack at clinical-os-doctor/data/dgda-drugs.js";
+    }
+
+    function render() {
+      if (!api || !api.ready()) {
+        els.tbody.innerHTML = `<tr><td colspan="7" class="muted">No drug pack loaded.</td></tr>`;
+        return;
+      }
+      const hits = api.search(els.q.value, {
+        system: els.system.value,
+        limit: Number(els.limit.value) || 50,
+      });
+      if (!hits.length) {
+        els.tbody.innerHTML = `<tr><td colspan="7" class="muted">No matches.</td></tr>`;
+        return;
+      }
+      els.tbody.innerHTML = hits
+        .map(
+          (d) => `
+          <tr>
+            <td><strong>${esc(d.brand)}</strong></td>
+            <td>${esc(d.generic)}</td>
+            <td>${esc(d.strength)}</td>
+            <td>${esc(d.form)}</td>
+            <td>${esc(d.company)}</td>
+            <td>${esc(d.system)}</td>
+            <td>${esc(d.dar)}</td>
+          </tr>`
+        )
+        .join("");
+    }
+
+    document.getElementById("btn-search").addEventListener("click", render);
+    els.q.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") render();
+    });
+    els.system.addEventListener("change", render);
+    els.limit.addEventListener("change", render);
+    document.getElementById("btn-reimport-hint").addEventListener("click", () => {
+      alert(
+        "To refresh from Excel:\n\npython scripts/import-dgda-medicines.py --xlsx \"F:\\\\conversion\\\\generic_magazine\\\\Bangladesh_Medicines_DGDA.xlsx\""
+      );
+    });
+
+    renderStats();
+    render();
+  </script>
+</body>
+</html>
