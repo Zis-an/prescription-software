@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clinical OS — Pharmacy Verify</title>
+    <style>
+      :root { --accent:#0b5f4b; --bg:#eef4f1; }
+      body { margin:0; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:#0f1c18; }
+      main { max-width:640px; margin:0 auto; padding:24px 16px; }
+      .card { background:#fff; border:1px solid #d7e2dd; border-radius:14px; padding:18px; }
+      h1 { color:var(--accent); margin:0 0 8px; font-size:1.35rem; }
+      label { display:grid; gap:6px; margin:12px 0; }
+      input { padding:10px; border:1px solid #c9d5cf; border-radius:8px; font:inherit; text-transform:uppercase; }
+      button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:10px 14px; font-weight:600; cursor:pointer; }
+      .ok { color:#027a48; font-weight:700; }
+      .bad { color:#b42318; font-weight:700; }
+      .muted { color:#5a6b64; }
+      .med { border-top:1px solid #e6eeea; padding:8px 0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="card">
+        <h1>Pharmacy verification</h1>
+        <p class="muted">Confirm the latest signed prescription version.</p>
+        <form id="form">
+          <label>Verify code
+            <input name="code" value="DEMO01" required />
+          </label>
+          <button type="submit">Verify</button>
+        </form>
+        <p id="err" class="bad" hidden></p>
+      </div>
+      <div id="out" class="card" hidden style="margin-top:14px"></div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
