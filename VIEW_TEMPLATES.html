@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinical OS — Template Viewer Hub</title>
+  <link rel="icon" href="app-templates/frontend/clinical-os-doctor/assets/logo.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #0a2f27;
+      --card: rgba(255,255,255,.06);
+      --ink: #e8fff6;
+      --muted: #9ecbb8;
+      --accent: #1dbf73;
+      --line: rgba(255,255,255,.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background:
+        linear-gradient(160deg, rgba(10,47,39,.92), rgba(18,48,71,.88)),
+        url("app-templates/frontend/clinical-os-doctor/assets/login-hero.jpg") center / cover no-repeat fixed;
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 60px; }
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+    .hero-brand img {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    }
+    h1 { margin: 0 0 8px; font-size: 1.8rem; }
+    p { color: var(--muted); line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 22px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2 { margin: 0 0 8px; font-size: 1.05rem; }
+    .card a {
+      display: block;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(29,191,115,.15);
+      color: #b7ffd9;
+      text-decoration: none;
+      font-size: .92rem;
+    }
+    .card a:hover { background: rgba(29,191,115,.28); }
+    .tag {
+      display: inline-block;
+      font-size: .72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .note {
+      margin-top: 24px;
+      padding: 12px 14px;
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      font-size: .9rem;
+      color: var(--muted);
+      background: rgba(0,0,0,.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero-brand">
+      <img src="app-templates/frontend/clinical-os-doctor/assets/logo.svg" alt="Clinical OS" />
+      <div>
+        <h1>Clinical OS — Template Viewer</h1>
+        <p style="margin:0">One Doctor. One Patient Record. Every Chamber.</p>
+      </div>
+    </div>
+    <p>Open any link below in Chrome. Server root: <code>http://localhost:8080</code></p>
+
+    <div class="grid">
+      <section class="card">
+        <span class="tag">PRINT / PDF PADS</span>
+        <h2>Rx templates (A4/A5 · EN/BN)</h2>
+        <a href="/templates/preview/" target="_blank">Interactive print preview</a>
+        <a href="/templates/README.md" target="_blank">Print kit README</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">ADMIN</span>
+        <h2>Clinical OS admin stubs</h2>
+        <a href="/app-templates/admin/clinical-os-pages/dashboard.html" target="_blank">Dashboard</a>
+        <a href="/app-templates/admin/clinical-os-pages/doctors.html" target="_blank">Doctors</a>
+        <a href="/app-templates/admin/clinical-os-pages/chambers.html" target="_blank">Chambers</a>
+        <a href="/app-templates/admin/clinical-os-pages/drug-kb.html" target="_blank">Drug KB</a>
+        <a href="/app-templates/admin/clinical-os-pages/audit-logs.html" target="_blank">Audit logs</a>
+        <a href="/app-templates/admin/clinical-os-pages/settings.html" target="_blank">Settings</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">ADMIN KIT</span>
+        <h2>AdminLTE (full kit)</h2>
+        <a href="/app-templates/admin/adminlte/dist/index.html" target="_blank">AdminLTE dashboard</a>
+        <a href="/app-templates/admin/adminlte/dist/index2.html" target="_blank">Dashboard v2</a>
+        <a href="/app-templates/admin/adminlte/dist/index3.html" target="_blank">Dashboard v3</a>
+        <a href="/app-templates/admin/adminlte/dist/tables/simple.html" target="_blank">Tables</a>
+        <a href="/app-templates/admin/adminlte/dist/forms/general.html" target="_blank">Forms</a>
+        <a href="/app-templates/admin/adminlte/dist/examples/login.html" target="_blank">Login example</a>
+        <a href="/app-templates/admin/adminlte/dist/UI/general.html" target="_blank">UI elements</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">FRONTEND</span>
+        <h2>Doctor app</h2>
+        <a href="/app-templates/frontend/clinical-os-doctor/login.html" target="_blank">Login</a>
+        <a href="/app-templates/frontend/clinical-os-doctor/workbench.html" target="_blank">Rx Workbench</a>
+        <a href="/app-templates/frontend/clinical-os-doctor/patients.html" target="_blank">Patients</a>
+        <a href="/app-templates/frontend/clinical-os-doctor/queue.html" target="_blank">Queue</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">FRONTEND KIT</span>
+        <h2>Clinic public site (Clinical OS theme)</h2>
+        <a href="/app-templates/frontend/novena/theme/index.html" target="_blank">Home</a>
+        <a href="/app-templates/frontend/novena/theme/about.html" target="_blank">About</a>
+        <a href="/app-templates/frontend/novena/theme/doctor.html" target="_blank">Doctors</a>
+        <a href="/app-templates/frontend/novena/theme/department.html" target="_blank">Departments</a>
+        <a href="/app-templates/frontend/novena/theme/service.html" target="_blank">Services</a>
+        <a href="/app-templates/frontend/novena/theme/contact.html" target="_blank">Contact</a>
+        <a href="/app-templates/frontend/novena/theme/appoinment.html" target="_blank">Appointment</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">DESKTOP</span>
+        <h2>Electron shell</h2>
+        <a href="/app-templates/desktop/electron-shell/placeholder.html" target="_blank">Desktop placeholder (browser view)</a>
+        <p style="margin:10px 0 0;font-size:.85rem;color:var(--muted)">Native window: <code>cd apps/desktop && npm run dev</code></p>
+      </section>
+
+      <section class="card">
+        <span class="tag">MOBILE</span>
+        <h2>Flutter healthcare UI</h2>
+        <p style="margin:0;font-size:.9rem;color:var(--muted)">Flutter apps need the Flutter SDK (<code>flutter run</code>). Not static HTML.</p>
+        <a href="/app-templates/mobile/README.md" target="_blank">Mobile README</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">ADMIN KIT</span>
+        <h2>Tabler</h2>
+        <p style="margin:0;font-size:.9rem;color:var(--muted)">Source kit cloned. Use AdminLTE for full browser demo now.</p>
+        <a href="/app-templates/admin/tabler/README.md" target="_blank">Tabler README</a>
+      </section>
+    </div>
+
+    <div class="note">
+      Brand palette: deep teal <code>#0b5f4b</code> · mid <code>#147a61</code> · screen <code>#e8efeb</code>. Logo and clinical imagery are under doctor <code>assets/</code>.
+    </div>
+  </div>
+</body>
+</html>
