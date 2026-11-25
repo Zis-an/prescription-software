@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  DOCTOR
+  ASSISTANT
+  PATIENT
+  PHARMACIST
+}
+
+enum PrescriptionStatus {
+  DRAFT
+  SIGNED
+  SUPERSEDED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String?   @unique
+  phone        String?   @unique
+  passwordHash String?   @map("password_hash")
+  fullName     String    @map("full_name")
+  bmdcNumber   String?   @map("bmdc_number")
+  role         Role
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  chambers         UserChamber[]
+  prescriptions    Prescription[] @relation("DoctorPrescriptions")
+  auditLogs        AuditLog[]
+  patientsAsOwner  Patient[]      @relation("PatientOwnerDoctor")
+
+  @@index([role])
+  @@map("users")
+}
+
+model Chamber {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  phone     String?
+  hours     String?
+  feeBdt    Int?     @map("fee_bdt")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users         UserChamber[]
+  prescriptions Prescription[]
+  queueItems    QueueItem[]
+
+  @@map("chambers")
+}
+
+model UserChamber {
+  userId    String @map("user_id")
+  chamberId String @map("chamber_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chamber Chamber @relation(fields: [chamberId], references: [id], onDelete: Cascade)
+
+  @@id([userId, chamberId])
+  @@map("user_chambers")
+}
+
+model Patient {
+  id              String   @id @default(uuid())
+  name            String
+  nameBn          String?  @map("name_bn")
+  phone           String?
+  ageYears        Int?     @map("age_years")
+  sex             String?
+  allergies       String[] @default([])
+  conditions      String[] @default([])
+  ownerDoctorId   String?  @map("owner_doctor_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  ownerDoctor   User?          @relation("PatientOwnerDoctor", fields: [ownerDoctorId], references: [id])
+  prescriptions Prescription[]
+  queueItems    QueueItem[]
+
+  @@index([phone])
+  @@index([name])
+  @@map("patients")
+}
+
+model Medicine {
+  id          String   @id @default(uuid())
+  externalId  String?  @unique @map("external_id")
+  brand       String
+  generic     String
+  strength    String?
+  form        String?
+  company     String?
+  dar         String?
+  system      String?  @default("Allopathic")
+  useFor      String?  @map("use_for")
+  priceBdt    Float?   @map("price_bdt")
+  /// Lower = higher priority among equal boost (1 is top). Super Admin controlled.
+  searchRank  Int      @default(1000) @map("search_rank")
+  /// Higher boost floats to top of search. Super Admin controlled.
+  boostScore  Int      @default(0) @map("boost_score")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([boostScore, searchRank])
+  @@index([brand])
+  @@index([generic])
+  @@index([isActive])
+  @@map("medicines")
+}
+
+model Prescription {
+  id            String             @id @default(uuid())
+  patientId     String             @map("patient_id")
+  doctorId      String             @map("doctor_id")
+  chamberId     String?            @map("chamber_id")
+  status        PrescriptionStatus @default(DRAFT)
+  version       Int                @default(1)
+  diagnosis     String?
+  advice        String?
+  shareToken    String?            @unique @map("share_token")
+  verifyCode    String?            @unique @map("verify_code")
+  signedAt      DateTime?          @map("signed_at")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+
+  patient Patient          @relation(fields: [patientId], references: [id])
+  doctor  User             @relation("DoctorPrescriptions", fields: [doctorId], references: [id])
+  chamber Chamber?         @relation(fields: [chamberId], references: [id])
+  lines   MedicationLine[]
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([status])
+  @@map("prescriptions")
+}
+
+model MedicationLine {
+  id             String @id @default(uuid())
+  prescriptionId String @map("prescription_id")
+  medicineId     String? @map("medicine_id")
+  brand          String
+  generic        String?
+  strength       String?
+  dose           String?
+  frequency      String?
+  duration       String?
+  instructions   String?
+  sortOrder      Int     @default(0) @map("sort_order")
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  @@index([prescriptionId])
+  @@map("medication_lines")
+}
+
+model QueueItem {
+  id          String   @id @default(uuid())
+  chamberId   String   @map("chamber_id")
+  patientId   String   @map("patient_id")
+  serial      Int
+  status      String   @default("waiting")
+  feeBdt      Int?     @map("fee_bdt")
+  vitalsJson  Json?    @map("vitals_json")
+  visitDate   DateTime @default(now()) @map("visit_date") @db.Date
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  chamber Chamber @relation(fields: [chamberId], references: [id])
+  patient Patient @relation(fields: [patientId], references: [id])
+
+  @@unique([chamberId, visitDate, serial])
+  @@index([chamberId, visitDate, status])
+  @@map("queue_items")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?  @map("actor_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  meta       Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model OrgSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("org_settings")
+}
