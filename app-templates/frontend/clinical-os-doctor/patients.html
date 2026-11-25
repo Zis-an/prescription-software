@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Patients · Clinical OS</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="shared.css" />
+</head>
+<body>
+  <div class="subhead">
+    <h1>Patient registry</h1>
+    <span class="breadcrumb">Master index · search by name, mobile, or ID</span>
+    <span class="kbd-hint"><kbd>/</kbd> focus search · <kbd>Enter</kbd> open</span>
+  </div>
+
+  <main class="app-main">
+    <div class="stat-strip" id="stats"></div>
+
+    <section class="panel">
+      <div class="panel-hd">
+        <h2>Patients</h2>
+        <span class="meta" id="result-count"></span>
+      </div>
+      <div class="panel-bd stack">
+        <div class="field-row" style="grid-template-columns: 1fr auto">
+          <div class="search-wrap">
+            <span class="icon" aria-hidden="true">⌕</span>
+            <input data-global-search id="q" type="search" placeholder="Search name, mobile, condition, allergy…" autofocus />
+          </div>
+          <button class="btn btn-secondary" type="button" id="btn-reset-demo">Reset demo data</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data" id="patient-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Age / Sex</th>
+                <th>Phone</th>
+                <th>Allergies</th>
+                <th>Conditions</th>
+                <th>Last visit</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/dgda-drugs.js"></script>
+  <script src="drug-kb.js"></script>
+  <script src="demo-db.js"></script>
+  <script src="sync-engine.js"></script>
+  <script src="app.js"></script>
+  <script>
+    ClinicalOSApp.initPage("patients");
+
+    const q = document.getElementById("q");
+    const tbody = document.querySelector("#patient-table tbody");
+    const resultCount = document.getElementById("result-count");
+    const stats = document.getElementById("stats");
+
+    function renderStats() {
+      const s = ClinicalOSDB.stats();
+      stats.innerHTML = `
+        <div class="stat"><div class="k">Patients</div><div class="v">${s.patients}</div></div>
+        <div class="stat"><div class="k">In queue</div><div class="v">${s.waiting + (s.current ? 1 : 0)}</div></div>
+        <div class="stat"><div class="k">Seen today</div><div class="v">${s.done}</div></div>
+        <div class="stat"><div class="k">Formulary</div><div class="v">${s.drugs}</div></div>
+      `;
+    }
+
+    function allergyCell(p) {
+      if (!p.allergies || !p.allergies.length) return '<span class="muted">None recorded</span>';
+      return p.allergies.map((a) => `<span class="badge badge-danger">${a}</span>`).join(" ");
+    }
+
+    function render() {
+      const list = ClinicalOSDB.searchPatients(q.value);
+      resultCount.textContent = `${list.length} record${list.length === 1 ? "" : "s"}`;
+      tbody.innerHTML = list
+        .map((p) => `
+          <tr data-id="${p.id}" tabindex="0">
+            <td>
+              <strong>${p.name}</strong>
+              <div class="small muted mono">${p.id}${p.nameBn ? " · " + p.nameBn : ""}</div>
+            </td>
+            <td>${ClinicalOSApp.ageSex(p)}</td>
+            <td class="mono">${ClinicalOSApp.formatPhone(p.phone)}</td>
+            <td>${allergyCell(p)}</td>
+            <td class="small">${(p.conditions || []).slice(0, 2).join("; ") || "—"}</td>
+            <td class="mono">${p.lastVisit || "—"}</td>
+            <td class="right"><button class="btn btn-sm" data-open="${p.id}">Open chart</button></td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function openPatient(id) {
+      ClinicalOSDB.setActivePatient(id);
+      ClinicalOSApp.toast(`Opened ${ClinicalOSDB.patientById(id).name}`, "ok");
+      location.href = "workbench.html";
+    }
+
+    tbody.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-open]");
+      if (btn) openPatient(btn.getAttribute("data-open"));
+    });
+
+    tbody.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const row = e.target.closest("tr[data-id]");
+        if (row) openPatient(row.getAttribute("data-id"));
+      }
+    });
+
+    q.addEventListener("input", render);
+    document.getElementById("btn-reset-demo").addEventListener("click", () => {
+      ClinicalOSDB.reset();
+      ClinicalOSApp.toast("Demo database restored", "ok");
+      renderStats();
+      render();
+    });
+
+    renderStats();
+    render();
+  </script>
+</body>
+</html>

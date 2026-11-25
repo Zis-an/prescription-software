@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Today's queue · Clinical OS</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="shared.css" />
+</head>
+<body>
+  <div class="subhead">
+    <h1>Consultation queue</h1>
+    <span class="breadcrumb" id="chamber-label"></span>
+    <span class="kbd-hint">Select a patient · <kbd>Enter</kbd> open workbench</span>
+  </div>
+
+  <main class="app-main">
+    <div class="stat-strip" id="stats"></div>
+
+    <section class="panel">
+      <div class="panel-hd">
+        <h2>Today</h2>
+        <span class="meta" id="date-label"></span>
+      </div>
+      <div class="panel-bd">
+        <div class="table-wrap">
+          <table class="data" id="queue-table">
+            <thead>
+              <tr>
+                <th>Serial</th>
+                <th>Patient</th>
+                <th>Checked in</th>
+                <th>Vitals</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/dgda-drugs.js"></script>
+  <script src="drug-kb.js"></script>
+  <script src="demo-db.js"></script>
+  <script src="sync-engine.js"></script>
+  <script src="app.js"></script>
+  <script>
+    ClinicalOSApp.initPage("queue");
+
+    const chamber = ClinicalOSDB.activeChamber();
+    document.getElementById("chamber-label").textContent =
+      `${chamber.name} · consultation fee ৳${chamber.fee}`;
+    document.getElementById("date-label").textContent = new Date().toLocaleDateString("en-GB", {
+      weekday: "long", year: "numeric", month: "short", day: "numeric",
+    });
+
+    function statusBadge(status) {
+      if (status === "current") return '<span class="badge badge-now">Current</span>';
+      if (status === "waiting") return '<span class="badge badge-wait">Waiting</span>';
+      return '<span class="badge badge-done">Done</span>';
+    }
+
+    function vitalsText(v) {
+      if (!v) return '<span class="muted">Pending</span>';
+      const parts = [];
+      if (v.bp) parts.push(`BP ${v.bp}`);
+      if (v.pulse) parts.push(`P ${v.pulse}`);
+      if (v.tempC) parts.push(`${v.tempC}°C`);
+      if (v.spo2) parts.push(`SpO₂ ${v.spo2}%`);
+      return `<span class="mono small">${parts.join(" · ")}</span>`;
+    }
+
+    function render() {
+      const s = ClinicalOSDB.stats();
+      document.getElementById("stats").innerHTML = `
+        <div class="stat"><div class="k">Current</div><div class="v">${s.current ? "#" + s.current.serial : "—"}</div></div>
+        <div class="stat"><div class="k">Waiting</div><div class="v">${s.waiting}</div></div>
+        <div class="stat"><div class="k">Completed</div><div class="v">${s.done}</div></div>
+        <div class="stat"><div class="k">Total today</div><div class="v">${s.waiting + s.done + (s.current ? 1 : 0)}</div></div>
+      `;
+
+      const rows = ClinicalOSDB.queueToday();
+      const tbody = document.querySelector("#queue-table tbody");
+      tbody.innerHTML = rows
+        .map((row) => {
+          const p = row.patient;
+          const cls = row.status === "current" ? "is-current" : "";
+          return `
+            <tr class="${cls}" data-id="${p.id}" tabindex="0">
+              <td class="mono"><strong>${row.serial}</strong></td>
+              <td>
+                <strong>${p.name}</strong>
+                <div class="small muted">${ClinicalOSApp.ageSex(p)} · ${p.phone}</div>
+                ${
+                  p.allergies?.length
+                    ? `<div style="margin-top:4px">${p.allergies.map((a) => `<span class="badge badge-danger">${a}</span>`).join(" ")}</div>`
+                    : ""
+                }
+              </td>
+              <td class="mono">${row.checkedInAt}</td>
+              <td>${vitalsText(row.vitals)}</td>
+              <td>${statusBadge(row.status)}</td>
+              <td class="right">
+                <button class="btn btn-sm ${row.status === "done" ? "btn-secondary" : ""}" data-open="${p.id}">
+                  ${row.status === "done" ? "Review" : "Prescribe"}
+                </button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function openPatient(id) {
+      ClinicalOSDB.setActivePatient(id);
+      location.href = "workbench.html";
+    }
+
+    document.querySelector("#queue-table").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-open]");
+      if (btn) openPatient(btn.getAttribute("data-open"));
+    });
+
+    document.querySelector("#queue-table").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const row = e.target.closest("tr[data-id]");
+        if (row) openPatient(row.getAttribute("data-id"));
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="clinical-os-api" content="" />
+  <title>Rx Workbench · Clinical OS</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="shared.css" />
+</head>
+<body>
+  <div class="subhead">
+    <h1>Prescription workbench</h1>
+    <span class="breadcrumb">Single-screen composer · keyboard-first</span>
+    <span class="kbd-hint">
+      <kbd>/</kbd> drug search · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> sign &amp; print · <kbd>Esc</kbd> clear search
+    </span>
+  </div>
+
+  <main class="app-main">
+    <div class="grid-workbench">
+      <!-- Queue context -->
+      <aside class="panel col-queue" aria-label="Today's queue">
+        <div class="panel-hd">
+          <h2>Queue</h2>
+          <span class="meta" id="queue-meta"></span>
+        </div>
+        <div class="panel-bd">
+          <div class="queue-list" id="queue-list"></div>
+        </div>
+      </aside>
+
+      <!-- Clinical composer -->
+      <section class="stack" aria-label="Prescription editor">
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Patient</h2>
+            <span class="meta" id="visit-meta"></span>
+          </div>
+          <div class="panel-bd stack">
+            <div class="patient-id" id="patient-id"></div>
+            <div id="allergy-banner"></div>
+            <div class="vitals" id="vitals"></div>
+            <div class="field-row">
+              <label class="field" style="grid-column: 1 / -1">
+                <span>Chief complaint</span>
+                <input id="complaint" type="text" />
+              </label>
+              <label class="field" style="grid-column: 1 / -1">
+                <span>Diagnosis</span>
+                <textarea id="diagnosis" rows="2"></textarea>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Medications</h2>
+            <span class="meta" id="formulary-meta">DGDA formulary</span>
+          </div>
+          <div class="panel-bd stack">
+            <div class="field-row" style="grid-template-columns: 1fr 160px; gap: 8px">
+              <div class="search-wrap">
+                <span class="icon" aria-hidden="true">⌕</span>
+                <input data-global-search id="drug-q" type="search" placeholder="Search brand, generic, DAR… (type to add)" autocomplete="off" />
+                <div class="typeahead" id="drug-results" hidden role="listbox"></div>
+              </div>
+              <label class="field" style="margin:0">
+                <span>System</span>
+                <select id="drug-system">
+                  <option value="Allopathic" selected>Allopathic</option>
+                  <option value="Ayurvedic">Ayurvedic</option>
+                  <option value="Herbal">Herbal</option>
+                  <option value="Homeopathic & Biochemic">Homeopathic</option>
+                  <option value="Unani">Unani</option>
+                  <option value="">All systems</option>
+                </select>
+              </label>
+            </div>
+            <div id="cdss-banner"></div>
+            <div class="table-wrap">
+              <table class="data meds-table" id="meds-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Drug</th>
+                    <th>Dose</th>
+                    <th>Freq</th>
+                    <th>Days</th>
+                    <th>Instruction</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="muted small" id="meds-hint">No medications yet. Search above to add a line.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Prior prescriptions</h2>
+            <span class="meta">Longitudinal timeline</span>
+          </div>
+          <div class="panel-bd" id="rx-history"></div>
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <aside class="stack" aria-label="Actions">
+        <div class="panel">
+          <div class="panel-hd"><h2>Sign &amp; issue</h2></div>
+          <div class="panel-bd stack">
+            <label class="field">
+              <span>Pad language</span>
+              <select id="locale">
+                <option value="en">English</option>
+                <option value="bn">বাংলা</option>
+                <option value="both">Bilingual</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Paper size</span>
+              <select id="paper">
+                <option value="a5">A5 (chamber pad)</option>
+                <option value="a4">A4</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Advice (EN)</span>
+              <textarea id="advice" rows="3"></textarea>
+            </label>
+            <label class="field">
+              <span>পরামর্শ (BN)</span>
+              <textarea id="adviceBn" rows="3"></textarea>
+            </label>
+            <label class="field">
+              <span>Follow-up date</span>
+              <input id="followUp" type="date" />
+            </label>
+
+            <div class="btn-row" style="flex-direction:column">
+              <button class="btn btn-block" id="btn-sign" type="button">Sign &amp; print</button>
+              <button class="btn btn-ghost btn-block" id="btn-share" type="button">Share SMS / QR</button>
+              <button class="btn btn-secondary btn-block" id="btn-rerx" type="button">1-click re-prescribe last</button>
+            </div>
+
+            <div class="alert alert-info">
+              <div>
+                <strong>Clinical safety</strong>
+                <div class="small">Allergy and penicillin-class checks run on add. Overrides are logged in production.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Prescriber</h2></div>
+          <div class="panel-bd" id="prescriber"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Set CLINICAL_OS_API_URL or meta[name=clinical-os-api] to http://localhost:3001 for ranked PG search -->
+  <script>
+    window.CLINICAL_OS_API_URL = window.CLINICAL_OS_API_URL || "";
+  </script>
+  <script src="data/dgda-drugs.js"></script>
+  <script src="api-client.js"></script>
+  <script src="drug-kb.js"></script>
+  <script src="demo-db.js"></script>
+  <script src="sync-engine.js"></script>
+  <script src="app.js"></script>
+  <script>
+    ClinicalOSApp.initPage("workbench");
+
+    (function refreshFormularyMeta() {
+      const metaEl = document.getElementById("formulary-meta");
+      const api = window.ClinicalOSDrugAPI;
+      if (api && api.ready()) {
+        const m = api.meta();
+        metaEl.textContent =
+          Number(m.count || 0).toLocaleString() + " DGDA medicines · human use";
+      } else {
+        metaEl.textContent = "Demo formulary only (DGDA pack not loaded)";
+      }
+    })();
+
+    const state = {
+      patient: null,
+      queueRow: null,
+      meds: [],
+      drugHits: [],
+      selectedDrugIndex: 0,
+    };
+
+    const els = {
+      queueList: document.getElementById("queue-list"),
+      queueMeta: document.getElementById("queue-meta"),
+      patientId: document.getElementById("patient-id"),
+      allergyBanner: document.getElementById("allergy-banner"),
+      vitals: document.getElementById("vitals"),
+      visitMeta: document.getElementById("visit-meta"),
+      complaint: document.getElementById("complaint"),
+      diagnosis: document.getElementById("diagnosis"),
+      advice: document.getElementById("advice"),
+      adviceBn: document.getElementById("adviceBn"),
+      followUp: document.getElementById("followUp"),
+      drugQ: document.getElementById("drug-q"),
+      drugResults: document.getElementById("drug-results"),
+      medsTable: document.querySelector("#meds-table tbody"),
+      medsHint: document.getElementById("meds-hint"),
+      cdss: document.getElementById("cdss-banner"),
+      rxHistory: document.getElementById("rx-history"),
+      prescriber: document.getElementById("prescriber"),
+    };
+
+    function loadPatient(id) {
+      ClinicalOSDB.setActivePatient(id);
+      state.patient = ClinicalOSDB.patientById(id);
+      state.queueRow = ClinicalOSDB.queueToday().find((q) => q.patientId === id) || null;
+
+      const draft = ClinicalOSDB.draftFor(id);
+      if (draft) {
+        state.meds = ClinicalOSDB.enrichMeds(draft.medications).map((m) => ({
+          drugId: m.drugId,
+          brand: m.brand,
+          generic: m.generic,
+          strength: m.strength,
+          form: m.form,
+          tags: m.tags,
+          dose: m.dose,
+          frequency: m.frequency,
+          durationDays: m.durationDays,
+          instruction: m.instruction,
+          instructionBn: m.instructionBn,
+        }));
+        els.complaint.value = draft.chiefComplaint || "";
+        els.diagnosis.value = draft.diagnosis || "";
+        els.advice.value = draft.advice || "";
+        els.adviceBn.value = draft.adviceBn || "";
+        els.followUp.value = draft.followUpDate || "";
+      } else {
+        state.meds = [];
+        els.complaint.value = "";
+        els.diagnosis.value = (state.patient.conditions || []).join("; ");
+        els.advice.value = "";
+        els.adviceBn.value = "";
+        els.followUp.value = "";
+      }
+
+      renderAll();
+    }
+
+    function renderQueue() {
+      const rows = ClinicalOSDB.queueToday();
+      const waiting = rows.filter((r) => r.status !== "done").length;
+      els.queueMeta.textContent = `${waiting} active`;
+      els.queueList.innerHTML = rows
+        .map((row) => {
+          const p = row.patient;
+          const active = p.id === state.patient?.id ? "is-current" : "";
+          return `
+            <div class="queue-item ${active}" data-id="${p.id}" role="button" tabindex="0">
+              <div class="serial">${row.serial}</div>
+              <div>
+                <div class="q-name">${p.name}</div>
+                <div class="q-meta">${ClinicalOSApp.ageSex(p)} · ${row.status}</div>
+              </div>
+              <div>${row.status === "current" ? '<span class="badge badge-now">Now</span>' : row.status === "waiting" ? '<span class="badge badge-wait">Wait</span>' : '<span class="badge badge-done">Done</span>'}</div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function renderPatient() {
+      const p = state.patient;
+      if (!p) return;
+      els.patientId.innerHTML = `
+        <div class="name-row">
+          <h3 class="name">${p.name}</h3>
+          <span class="pid">${p.id}${p.nameBn ? " · " + p.nameBn : ""}</span>
+          ${p.bloodGroup ? `<span class="badge badge-info">${p.bloodGroup}</span>` : ""}
+        </div>
+        <div class="facts">
+          <span><b>${ClinicalOSApp.ageSex(p)}</b></span>
+          <span>Wt <b>${p.weightKg || "—"} kg</b></span>
+          <span>Ht <b>${p.heightCm || "—"} cm</b></span>
+          <span>${ClinicalOSApp.formatPhone(p.phone)}</span>
+          <span>${p.address || ""}</span>
+        </div>
+        ${
+          (p.conditions || []).length
+            ? `<div class="facts"><span>Conditions: <b>${p.conditions.join("; ")}</b></span></div>`
+            : ""
+        }
+      `;
+
+      if (p.allergies?.length) {
+        els.allergyBanner.innerHTML = `
+          <div class="alert alert-danger" role="alert">
+            <div>
+              <strong>Allergy alert</strong>
+              <div>${p.allergies.join(" · ")}. Penicillin-class antibiotics will be blocked with override prompt.</div>
+            </div>
+          </div>
+        `;
+      } else {
+        els.allergyBanner.innerHTML = `
+          <div class="alert alert-info"><div><strong>Allergies</strong> — None recorded. Confirm verbally before prescribing.</div></div>
+        `;
+      }
+
+      const v = state.queueRow?.vitals;
+      const cells = [
+        ["BP", v?.bp || "—"],
+        ["Pulse", v?.pulse != null ? `${v.pulse}` : "—"],
+        ["Temp", v?.tempC != null ? `${v.tempC}°C` : "—"],
+        ["SpO₂", v?.spo2 != null ? `${v.spo2}%` : "—"],
+      ];
+      els.vitals.innerHTML = cells
+        .map(([k, val]) => `<div class="vital"><div class="k">${k}</div><div class="v">${val}</div></div>`)
+        .join("");
+
+      els.visitMeta.textContent = state.queueRow
+        ? `Serial #${state.queueRow.serial} · checked in ${state.queueRow.checkedInAt}`
+        : "Out of queue · chart only";
+    }
+
+    function renderMeds() {
+      els.medsHint.hidden = state.meds.length > 0;
+      els.medsTable.innerHTML = state.meds
+        .map(
+          (m, i) => `
+          <tr>
+            <td class="mono">${i + 1}</td>
+            <td>
+              <strong>${m.brand}</strong> ${m.strength}
+              <div class="small muted">${m.generic} · ${m.form}</div>
+            </td>
+            <td><input data-i="${i}" data-f="dose" value="${m.dose}" /></td>
+            <td>
+              <select data-i="${i}" data-f="frequency">
+                ${["OD", "BID", "TID", "QID", "q6h PRN", "q8h", "HS", "STAT"]
+                  .map((f) => `<option ${f === m.frequency ? "selected" : ""}>${f}</option>`)
+                  .join("")}
+              </select>
+            </td>
+            <td><input data-i="${i}" data-f="durationDays" type="number" min="1" value="${m.durationDays}" style="width:64px" /></td>
+            <td><input data-i="${i}" data-f="instruction" value="${m.instruction || ""}" /></td>
+            <td class="actions"><button class="link-btn danger" data-remove="${i}" type="button">Remove</button></td>
+          </tr>
+        `
+        )
+        .join("");
+      evaluateCdss();
+    }
+
+    function evaluateCdss() {
+      const allergies = (state.patient?.allergies || []).map((a) => a.toLowerCase());
+      const hits = [];
+      state.meds.forEach((m) => {
+        const penicillinAllergy = allergies.some((a) => a.includes("penicillin"));
+        if (penicillinAllergy && (m.tags || []).includes("penicillin")) {
+          hits.push(`${m.brand} is penicillin-class — contraindicated with recorded penicillin allergy.`);
+        }
+        const nsaidAllergy = allergies.some((a) => a.includes("nsaid"));
+        if (nsaidAllergy && (m.generic || "").toLowerCase().includes("ibuprofen")) {
+          hits.push(`${m.brand} may be unsafe given NSAID history.`);
+        }
+      });
+      if (hits.length) {
+        els.cdss.innerHTML = `<div class="alert alert-danger" role="alert"><div><strong>CDSS</strong><div>${hits.join("<br>")}</div></div></div>`;
+      } else {
+        els.cdss.innerHTML = "";
+      }
+    }
+
+    function renderHistory() {
+      const list = ClinicalOSDB.prescriptionsFor(state.patient.id);
+      if (!list.length) {
+        els.rxHistory.innerHTML = `<div class="empty">No prior prescriptions in demo store.</div>`;
+        return;
+      }
+      els.rxHistory.innerHTML = `
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Rx ID</th><th>Date</th><th>Diagnosis</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              ${list
+                .map((rx) => {
+                  const meds = ClinicalOSDB.enrichMeds(rx.medications);
+                  return `
+                    <tr>
+                      <td class="mono">${rx.id}</td>
+                      <td class="mono">${rx.authoredOn.slice(0, 10)}</td>
+                      <td>${rx.diagnosis || "—"}<div class="small muted">${meds.map((m) => m.brand).join(", ") || "No meds"}</div></td>
+                      <td><span class="badge ${rx.status === "signed" ? "badge-ok" : "badge-wait"}">${rx.status}</span></td>
+                      <td class="right"><button class="link-btn" type="button" data-load-rx="${rx.id}">Load</button></td>
+                    </tr>
+                  `;
+                })
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderPrescriber() {
+      const db = ClinicalOSDB.ensure();
+      const ch = ClinicalOSDB.activeChamber();
+      els.prescriber.innerHTML = `
+        <div class="stack" style="gap:6px">
+          <strong>${db.doctor.name}</strong>
+          <span class="small muted">${db.doctor.qualification}</span>
+          <span class="small">BM&amp;DC <span class="mono">${db.doctor.bmdc}</span></span>
+          <span class="small muted">${ch.name}</span>
+          <span class="small muted">${ch.address}</span>
+        </div>
+      `;
+    }
+
+    function renderAll() {
+      renderQueue();
+      renderPatient();
+      renderMeds();
+      renderHistory();
+      renderPrescriber();
+    }
+
+    function addDrug(drug) {
+      const allergies = (state.patient?.allergies || []).map((a) => a.toLowerCase());
+      const penicillinAllergy = allergies.some((a) => a.includes("penicillin"));
+      if (penicillinAllergy && (drug.tags || []).includes("penicillin")) {
+        const ok = confirm(
+          `CLINICAL WARNING\n\n${drug.brand} (${drug.generic}) is penicillin-class.\nPatient allergy: ${state.patient.allergies.join(", ")}.\n\nOverride and add anyway?`
+        );
+        if (!ok) {
+          ClinicalOSApp.toast("Drug not added — allergy protection", "warn");
+          return;
+        }
+      }
+
+      state.meds.push({
+        drugId: drug.id,
+        brand: drug.brand,
+        generic: drug.generic,
+        strength: drug.strength,
+        form: drug.form,
+        tags: drug.tags || [],
+        dose: (() => {
+          const form = String(drug.form || "").toLowerCase();
+          if (form.includes("inhaler")) return "2 puffs";
+          if (form.includes("syrup") || form.includes("suspension") || form.includes("solution"))
+            return "5 ml";
+          if (form.includes("drop")) return "1 drop";
+          if (form.includes("injection") || form.includes("infusion")) return "1 vial";
+          if (form.includes("capsule")) return "1 capsule";
+          if (form) return "1 " + form;
+          return "1 tablet";
+        })(),
+        frequency: "OD",
+        durationDays: 5,
+        instruction: "As directed",
+        instructionBn: "নির্দেশ অনুযায়ী",
+      });
+      els.drugQ.value = "";
+      els.drugResults.hidden = true;
+      renderMeds();
+      ClinicalOSApp.toast(`Added ${drug.brand}`, "ok");
+    }
+
+    async function showDrugResults(query) {
+      const system = document.getElementById("drug-system")?.value ?? "Allopathic";
+      state.selectedDrugIndex = 0;
+      if (!query.trim()) {
+        els.drugResults.hidden = true;
+        return;
+      }
+      const drugs = await ClinicalOSDB.searchDrugsAsync(query, { limit: 14, system });
+      state.drugHits = drugs;
+      els.drugResults.hidden = false;
+      els.drugResults.innerHTML = drugs.length
+        ? drugs
+            .map(
+              (d, i) => `
+            <button type="button" role="option" data-drug-idx="${i}" data-drug="${d.id}" aria-selected="${i === 0}">
+              <span class="t1">${d.brand} <span class="muted">${d.strength || ""}</span></span>
+              <span class="t2">${d.generic || "—"} · ${d.form || "—"} · ${d.company || "—"}${d.dar ? " · DAR " + d.dar : ""}${d._source === "api" ? " · ranked" : ""}</span>
+            </button>
+          `
+            )
+            .join("")
+        : `<div class="empty">No matches in DGDA formulary</div>`;
+    }
+
+    function resolveDrugFromHit(btn) {
+      const idx = Number(btn.getAttribute("data-drug-idx"));
+      if (!Number.isNaN(idx) && state.drugHits[idx]) return state.drugHits[idx];
+      return ClinicalOSDB.drugById(btn.getAttribute("data-drug"));
+    }
+
+    // Events
+    els.queueList.addEventListener("click", (e) => {
+      const item = e.target.closest("[data-id]");
+      if (item) loadPatient(item.getAttribute("data-id"));
+    });
+
+    let drugSearchTimer = null;
+    els.drugQ.addEventListener("input", () => {
+      clearTimeout(drugSearchTimer);
+      drugSearchTimer = setTimeout(() => showDrugResults(els.drugQ.value), 60);
+    });
+    document.getElementById("drug-system").addEventListener("change", () => {
+      if (els.drugQ.value.trim()) showDrugResults(els.drugQ.value);
+    });
+    els.drugQ.addEventListener("keydown", (e) => {
+      const buttons = [...els.drugResults.querySelectorAll("button[data-drug]")];
+      if (e.key === "Escape") {
+        els.drugResults.hidden = true;
+        els.drugQ.blur();
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        state.selectedDrugIndex = Math.min(state.selectedDrugIndex + 1, buttons.length - 1);
+        buttons.forEach((b, i) => b.setAttribute("aria-selected", i === state.selectedDrugIndex));
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        state.selectedDrugIndex = Math.max(state.selectedDrugIndex - 1, 0);
+        buttons.forEach((b, i) => b.setAttribute("aria-selected", i === state.selectedDrugIndex));
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const btn = buttons[state.selectedDrugIndex];
+        if (btn) {
+          const drug = resolveDrugFromHit(btn);
+          if (drug) addDrug(drug);
+        }
+      }
+    });
+
+    els.drugResults.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-drug]");
+      if (!btn) return;
+      const drug = resolveDrugFromHit(btn);
+      if (drug) addDrug(drug);
+    });
+
+    els.medsTable.addEventListener("input", (e) => {
+      const el = e.target.closest("[data-i]");
+      if (!el) return;
+      const i = Number(el.getAttribute("data-i"));
+      const f = el.getAttribute("data-f");
+      state.meds[i][f] = f === "durationDays" ? Number(el.value) : el.value;
+    });
+
+    els.medsTable.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-remove]");
+      if (!btn) return;
+      state.meds.splice(Number(btn.getAttribute("data-remove")), 1);
+      renderMeds();
+    });
+
+    document.getElementById("rx-history").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-load-rx]");
+      if (!btn) return;
+      const rx = ClinicalOSDB.ensure().prescriptions.find((r) => r.id === btn.getAttribute("data-load-rx"));
+      if (!rx) return;
+      state.meds = ClinicalOSDB.enrichMeds(rx.medications).map((m) => ({
+        drugId: m.drugId,
+        brand: m.brand,
+        generic: m.generic,
+        strength: m.strength,
+        form: m.form,
+        tags: m.tags,
+        dose: m.dose,
+        frequency: m.frequency,
+        durationDays: m.durationDays,
+        instruction: m.instruction,
+        instructionBn: m.instructionBn,
+      }));
+      els.complaint.value = rx.chiefComplaint || "";
+      els.diagnosis.value = rx.diagnosis || "";
+      els.advice.value = rx.advice || "";
+      els.adviceBn.value = rx.adviceBn || "";
+      renderMeds();
+      ClinicalOSApp.toast(`Loaded ${rx.id}`, "ok");
+    });
+
+    function signAndPrint() {
+      if (!state.meds.length) {
+        ClinicalOSApp.toast("Add at least one medication", "warn");
+        els.drugQ.focus();
+        return;
+      }
+      if (els.cdss.innerHTML.includes("CDSS")) {
+        const ok = confirm("Clinical alerts are present. Sign prescription anyway?");
+        if (!ok) return;
+      }
+
+      const db = ClinicalOSDB.ensure();
+      const rxId = "RX-" + Date.now();
+      const shareToken = "share-" + rxId.toLowerCase();
+      const verifyCode = ("V" + Date.now().toString(36)).slice(0, 6).toUpperCase();
+      const rx = {
+        id: rxId,
+        patientId: state.patient.id,
+        chamberId: ClinicalOSDB.activeChamber()?.id,
+        status: "signed",
+        diagnosis: els.diagnosis.value,
+        advice: els.advice.value,
+        adviceBn: els.adviceBn?.value || "",
+        meds: state.meds.slice(),
+        signedAt: new Date().toISOString(),
+        shareToken,
+        verifyCode,
+      };
+      db.prescriptions.unshift(rx);
+      ClinicalOSDB.save(db);
+
+      // Offline-first: always local first, then outbox → API when online
+      if (window.ClinicalOSSync) {
+        ClinicalOSSync.enqueue("prescription.sign", {
+          id: rxId,
+          patientId: state.patient.id,
+          doctorId: db.doctor?.id || "DOC-001",
+          chamberId: rx.chamberId,
+          diagnosis: rx.diagnosis,
+          advice: rx.advice,
+          shareToken,
+          verifyCode,
+          lines: state.meds.map((m) => ({
+            brand: m.brand,
+            generic: m.generic,
+            strength: m.strength,
+            dose: m.dose,
+            frequency: m.frequency,
+            duration: m.durationDays ? m.durationDays + " days" : m.duration,
+            instructions: m.instruction || m.instructions,
+          })),
+        });
+        const st = ClinicalOSSync.getStatus();
+        ClinicalOSApp.toast(
+          st.apiReachable
+            ? "Signed — syncing to server…"
+            : "Signed offline — queued for sync",
+          st.apiReachable ? "ok" : "warn"
+        );
+      } else {
+        ClinicalOSApp.toast("Prescription signed (local only)", "ok");
+      }
+
+      setTimeout(() => {
+        if (window.clinicalOSDesktop?.print) {
+          window.clinicalOSDesktop.print({ printBackground: true });
+        } else {
+          window.print();
+        }
+      }, 300);
+    }
+
+    document.getElementById("btn-sign").addEventListener("click", signAndPrint);
+    document.getElementById("btn-share").addEventListener("click", () => {
+      ClinicalOSApp.toast("Demo share link copied · https://verify.clinicalos.demo/rx/RX-DEMO", "ok");
+    });
+    document.getElementById("btn-rerx").addEventListener("click", () => {
+      const signed = ClinicalOSDB.prescriptionsFor(state.patient.id).find((r) => r.status === "signed");
+      if (!signed) {
+        ClinicalOSApp.toast("No signed prior Rx to re-prescribe", "warn");
+        return;
+      }
+      document.querySelector(`[data-load-rx="${signed.id}"]`)?.click();
+      ClinicalOSApp.toast("Re-prescribed from last signed Rx", "ok");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        signAndPrint();
+      }
+    });
+
+    // Boot with active / current patient
+    const stats = ClinicalOSDB.stats();
+    const startId =
+      ClinicalOSDB.ensure().session.activePatientId ||
+      stats.current?.patientId ||
+      ClinicalOSDB.ensure().patients[0].id;
+    loadPatient(startId);
+  </script>
+</body>
+</html>
