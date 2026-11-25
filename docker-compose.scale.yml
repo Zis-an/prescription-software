@@ -1,0 +1,71 @@
+# Scale profile: 2 API replicas behind Nginx.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.scale.yml up --build -d
+#
+# Note: the base compose `api` service is replaced by api1/api2; nginx uses scale config.
+
+services:
+  api:
+    profiles: ["disabled-base-api"]
+
+  api1:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: clinicalos-api-1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-clinicalos}:${POSTGRES_PASSWORD:-clinicalos_dev}@postgres:5432/${POSTGRES_DB:-clinicalos}?schema=public
+      REDIS_URL: redis://redis:6379
+      API_PORT: 3001
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-long-random-string}
+      INSTANCE_ID: api1
+    expose:
+      - "3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api2:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: clinicalos-api-2
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-clinicalos}:${POSTGRES_PASSWORD:-clinicalos_dev}@postgres:5432/${POSTGRES_DB:-clinicalos}?schema=public
+      REDIS_URL: redis://redis:6379
+      API_PORT: 3001
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production-use-long-random-string}
+      INSTANCE_ID: api2
+    expose:
+      - "3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  nginx:
+    volumes:
+      - ./infra/nginx/nginx.scale.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api1:
+        condition: service_healthy
+      api2:
+        condition: service_healthy
