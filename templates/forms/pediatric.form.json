@@ -1,0 +1,26 @@
+{
+  "id": "form.pediatric",
+  "title": "Pediatric prescription form",
+  "extends": "form.general",
+  "description": "Same unbound form model with weight-first vitals and pediatric dosing helpers enabled.",
+  "printTemplates": ["print.a4.pediatric", "print.a5.pediatric"],
+  "overrides": {
+    "highlightFields": ["patient.ageYears", "patient.weightKg"],
+    "requireFields": ["patient.ageYears", "patient.weightKg"],
+    "sectionsInsertAfter": {
+      "patient": [
+        {
+          "id": "peds_helpers",
+          "titleKey": "weight",
+          "columns": 12,
+          "fields": [
+            { "path": "patient.weightKg", "span": 3, "widget": "number", "required": true, "step": 0.1 },
+            { "path": "patient.ageYears", "span": 3, "widget": "number", "required": true },
+            { "path": "helpers.mgPerKg", "span": 3, "widget": "number", "labelOverride": "mg/kg hint", "ephemeral": true },
+            { "path": "helpers.computedDose", "span": 3, "widget": "text", "labelOverride": "Suggested dose", "readonly": true, "ephemeral": true }
+          ]
+        }
+      ]
+    }
+  }
+}

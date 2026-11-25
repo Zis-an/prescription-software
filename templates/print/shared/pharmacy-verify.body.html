@@ -1,0 +1,36 @@
+<article class="sheet a5" data-template="pharmacy_verify">
+  <header class="pad-header">
+    <div>
+      <h1 class="chamber-name" data-label="pharmacy_verify"></h1>
+      <div class="chamber-meta" data-text="chamber.name"></div>
+    </div>
+    <div class="prescriber-block">
+      <p class="prescriber-name" data-text="prescriber.name"></p>
+      <div class="bmdc"><span data-label="bmdc"></span>: <span data-text="prescriber.bmdc"></span></div>
+    </div>
+  </header>
+
+  <section class="clinical-box">
+    <div><span class="label" data-label="status"></span> <span class="value" data-text="rx.status"></span></div>
+    <div><span class="label" data-label="valid_version"></span> v<span class="value" data-text="rx.version"></span></div>
+    <div><span class="label" data-label="date"></span> <span class="value" data-text="rx.authoredOn"></span></div>
+    <div><span class="label" data-label="name"></span> <span class="value" data-text="patient.name"></span></div>
+    <div class="small muted" style="margin-top:6px" data-label="superseded_note"></div>
+  </section>
+
+  <section class="meds-box">
+    <div class="section-title" data-label="medications"></div>
+    <table class="meds">
+      <thead>
+        <tr><th>#</th><th data-label="medications"></th><th data-label="quantity"></th></tr>
+      </thead>
+      <tbody data-meds></tbody>
+    </table>
+  </section>
+
+  <footer class="footer-grid">
+    <div class="small muted" data-text="rx.id"></div>
+    <div class="sign-line"><div data-label="signature"></div></div>
+    <div class="qr-box"><div data-qr></div><div data-label="verify"></div></div>
+  </footer>
+</article>

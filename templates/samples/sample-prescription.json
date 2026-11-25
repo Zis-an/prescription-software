@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "templateId": "general",
+    "paper": "a5",
+    "locale": "en",
+    "showLocaleToggle": true
+  },
+  "rx": {
+    "id": "RX-2026-000148",
+    "version": 1,
+    "status": "signed",
+    "authoredOn": "2026-11-23T11:20:00+06:00",
+    "followUpDate": "2026-12-07",
+    "diagnosis": "Acute pharyngitis; Type 2 DM (controlled)",
+    "chiefComplaint": "Sore throat, mild fever for 2 days",
+    "advice": "Warm saline gargle. Continue metformin. Return earlier if fever >102F or difficulty swallowing.",
+    "adviceBn": "গলা গরম লবণ পানি দিয়ে কুলি করুন। মেটফরমিন চালিয়ে যান। জ্বর বা গিলতে কষ্ট হলে আগে ফিরে আসুন।",
+    "qrPayload": "https://verify.example.local/rx/RX-2026-000148?v=1",
+    "verifyUrl": "https://verify.example.local/rx/RX-2026-000148?v=1"
+  },
+  "prescriber": {
+    "name": "Dr. Ayesha Rahman",
+    "qualification": "MBBS, FCPS (Medicine)",
+    "bmdc": "A-54321",
+    "phone": "+8801711000000",
+    "signatureDataUrl": ""
+  },
+  "chamber": {
+    "name": "Green Life Chamber",
+    "address": "House 12, Road 4, Dhanmondi, Dhaka",
+    "phone": "+8802-55000000",
+    "hours": "Sat–Thu 6:00 PM – 9:00 PM",
+    "logoUrl": "",
+    "padAccent": "#0b5f4b"
+  },
+  "patient": {
+    "id": "P-10088",
+    "name": "Karim Hossain",
+    "ageYears": 42,
+    "sex": "male",
+    "weightKg": 72,
+    "heightCm": 168,
+    "phone": "+8801811000000",
+    "address": "Mirpur, Dhaka",
+    "allergies": "Penicillin"
+  },
+  "visit": {
+    "serial": "47",
+    "fee": 800,
+    "vitals": {
+      "bp": "128/82",
+      "pulse": "84",
+      "tempC": 37.8,
+      "spo2": 98
+    }
+  },
+  "medications": [
+    {
+      "lineNo": 1,
+      "genericName": "Azithromycin",
+      "brandName": "Azithrocin",
+      "strength": "500 mg",
+      "form": "Tablet",
+      "route": "Oral",
+      "dose": "1 tablet",
+      "frequency": "Once daily",
+      "duration": "3 days",
+      "quantity": "3",
+      "instruction": "Take 1 hour before meal",
+      "instructionBn": "খাবারের ১ ঘণ্টা আগে খেতে হবে",
+      "prnMax": "",
+      "substitutionAllowed": true
+    },
+    {
+      "lineNo": 2,
+      "genericName": "Paracetamol",
+      "brandName": "Napa",
+      "strength": "500 mg",
+      "form": "Tablet",
+      "route": "Oral",
+      "dose": "1 tablet",
+      "frequency": "Every 6 hours if required for fever",
+      "duration": "3 days",
+      "quantity": "12",
+      "instruction": "After food",
+      "instructionBn": "খাবারের পরে",
+      "prnMax": "Max 4 g/day",
+      "substitutionAllowed": true
+    },
+    {
+      "lineNo": 3,
+      "genericName": "Metformin",
+      "brandName": "Comet",
+      "strength": "500 mg",
+      "form": "Tablet",
+      "route": "Oral",
+      "dose": "1 tablet",
+      "frequency": "Twice daily",
+      "duration": "30 days",
+      "quantity": "60",
+      "instruction": "With meals — continue previous medicine",
+      "instructionBn": "খাবারের সাথে — পূর্বের ওষুধ চালিয়ে যান",
+      "prnMax": "",
+      "substitutionAllowed": false
+    }
+  ]
+}

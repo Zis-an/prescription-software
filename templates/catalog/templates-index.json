@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "ownership": "Original unbound assets for Clinical OS (BD). No third-party template license. Modify freely.",
+  "standardsBasis": [
+    "WHO Guide to Good Prescribing / Model Formulary prescription elements",
+    "HL7 FHIR MedicationRequest / Patient / Practitioner / Dosage concepts",
+    "Bangladesh chamber practice: A5 primary, A4 optional, BM&DC reg., Bangla+English"
+  ],
+  "paperSizes": ["a5", "a4"],
+  "locales": ["en", "bn"],
+  "printTemplates": [
+    {
+      "id": "print.general",
+      "body": "print/shared/general.body.html",
+      "papers": ["a5", "a4"],
+      "form": "form.general",
+      "use": "Default WHO-aligned chamber pad"
+    },
+    {
+      "id": "print.pediatric",
+      "body": "print/shared/pediatric.body.html",
+      "papers": ["a5", "a4"],
+      "form": "form.pediatric",
+      "use": "Weight/age emphasized pediatric pad"
+    },
+    {
+      "id": "print.chronic",
+      "body": "print/shared/chronic.body.html",
+      "papers": ["a5", "a4"],
+      "form": "form.chronic",
+      "use": "Long-term / re-Rx pad"
+    },
+    {
+      "id": "print.patient_share",
+      "body": "print/shared/patient-share.body.html",
+      "papers": ["a5", "a4"],
+      "form": null,
+      "use": "SMS/WhatsApp/QR patient view / printout"
+    },
+    {
+      "id": "print.pharmacy_verify",
+      "body": "print/shared/pharmacy-verify.body.html",
+      "papers": ["a5", "a4"],
+      "form": null,
+      "use": "Pharmacy authenticity / latest-version check"
+    },
+    {
+      "id": "print.serial_slip",
+      "body": "print/shared/serial-slip.body.html",
+      "papers": ["a5"],
+      "form": "form.assistant_serial",
+      "use": "Reception token slip (non-clinical)"
+    }
+  ],
+  "formTemplates": [
+    "forms/general.form.json",
+    "forms/pediatric.form.json",
+    "forms/chronic.form.json",
+    "forms/assistant-serial.form.json"
+  ],
+  "howToBindInApps": {
+    "web": "Load body HTML + pad.css + render.js; call PadRender.mount",
+    "desktop": "Embed same HTML in WebView (Electron/Tauri/WebView2) or print via headless Chromium",
+    "mobile": "Render WebView print preview OR map forms/*.json to native form controls; generate PDF from same HTML",
+    "pdf": "window.print() with @page size, or Chromium --print-to-pdf, or any HTML-to-PDF library"
+  },
+  "noBindings": {
+    "allowedEngines": ["vanilla", "Handlebars", "Liquid", "React", "Vue", "Flutter webview", "any"],
+    "forbiddenAssumption": "None. Replace render.js anytime. Field IDs in catalog/fields.json are the only contract you need."
+  }
+}

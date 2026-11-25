@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clinical OS — Unbound Template Preview</title>
+  <link rel="stylesheet" href="../print/shared/pad.css" />
+  <style>
+    .toolbar {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      padding: 10px 14px; background: #10251f; color: #edf6f2;
+      font-family: Segoe UI, sans-serif; font-size: 14px;
+    }
+    .toolbar label { display: flex; gap: 6px; align-items: center; }
+    .toolbar select, .toolbar button {
+      border: 0; border-radius: 6px; padding: 6px 10px; font: inherit;
+    }
+    .toolbar button { background: #1dbf73; color: #062016; font-weight: 700; cursor: pointer; }
+    .toolbar .hint { opacity: .75; margin-left: auto; font-size: 12px; }
+    .error { margin: 16px; padding: 12px; background: #ffe8e8; color: #7a1010; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="toolbar no-print">
+    <label>Template
+      <select id="tpl">
+        <option value="general">General Rx</option>
+        <option value="pediatric">Pediatric</option>
+        <option value="chronic">Chronic / re-Rx</option>
+        <option value="patient-share">Patient share</option>
+        <option value="pharmacy-verify">Pharmacy verify</option>
+        <option value="serial-slip">Serial slip</option>
+      </select>
+    </label>
+    <label>Paper
+      <select id="paper">
+        <option value="a5" selected>A5 (BD chamber)</option>
+        <option value="a4">A4</option>
+      </select>
+    </label>
+    <label>Language
+      <select id="locale">
+        <option value="en">English</option>
+        <option value="bn">বাংলা</option>
+      </select>
+    </label>
+    <button type="button" id="printBtn">Print / PDF</button>
+    <span class="hint">Serve this folder over HTTP for best results · No vendor lock-in</span>
+  </div>
+  <div id="err" class="error" hidden></div>
+  <div id="mount"></div>
+
+  <script src="../print/shared/render.js"></script>
+  <script>
+    const bodies = {
+      general: "../print/shared/general.body.html",
+      pediatric: "../print/shared/pediatric.body.html",
+      chronic: "../print/shared/chronic.body.html",
+      "patient-share": "../print/shared/patient-share.body.html",
+      "pharmacy-verify": "../print/shared/pharmacy-verify.body.html",
+      "serial-slip": "../print/shared/serial-slip.body.html",
+    };
+
+    const cache = { html: {}, locales: {}, sample: null };
+
+    async function loadJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to load " + url);
+      return res.json();
+    }
+
+    async function loadText(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to load " + url);
+      return res.text();
+    }
+
+    async function ensureAssets() {
+      if (!cache.sample) cache.sample = await loadJson("../samples/sample-prescription.json");
+      if (!cache.locales.en) cache.locales.en = await loadJson("../locales/en.json");
+      if (!cache.locales.bn) cache.locales.bn = await loadJson("../locales/bn.json");
+    }
+
+    async function render() {
+      const err = document.getElementById("err");
+      err.hidden = true;
+      try {
+        await ensureAssets();
+        const tpl = document.getElementById("tpl").value;
+        const paper = document.getElementById("paper").value;
+        const locale = document.getElementById("locale").value;
+        if (!cache.html[tpl]) cache.html[tpl] = await loadText(bodies[tpl]);
+        const data = structuredClone(cache.sample);
+        data.meta = { ...(data.meta || {}), paper, locale, templateId: tpl };
+        const labels = cache.locales[locale].labels;
+        PadRender.mount(document.getElementById("mount"), cache.html[tpl], data, labels, { paper, locale });
+        const sheet = document.querySelector(".sheet");
+        if (sheet) {
+          // Help browsers pick page size when printing
+          let style = document.getElementById("pageStyle");
+          if (!style) {
+            style = document.createElement("style");
+            style.id = "pageStyle";
+            document.head.appendChild(style);
+          }
+          style.textContent = `@page { size: ${paper.toUpperCase()} portrait; margin: 0; }`;
+        }
+      } catch (e) {
+        err.hidden = false;
+        err.innerHTML = `<strong>Could not load templates via file://</strong><br/>
+          From <code>templates</code> folder run:<br/>
+          <code>python -m http.server 8765</code><br/>
+          then open <code>http://localhost:8765/preview/</code><br/><br/>
+          Detail: ${e.message}`;
+      }
+    }
+
+    document.getElementById("tpl").addEventListener("change", render);
+    document.getElementById("paper").addEventListener("change", render);
+    document.getElementById("locale").addEventListener("change", render);
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<article class="sheet a5 patient-share" data-template="patient_share">
+  <header class="pad-header">
+    <div>
+      <h1 class="chamber-name" data-label="patient_copy"></h1>
+      <div class="chamber-meta" data-text="chamber.name"></div>
+      <div class="chamber-meta" data-text="prescriber.name"></div>
+    </div>
+    <div class="prescriber-block">
+      <div><span class="label" data-label="date"></span><span class="value" data-text="rx.authoredOn"></span></div>
+      <div class="small muted">v<span data-text="rx.version"></span> · <span data-text="rx.id"></span></div>
+    </div>
+  </header>
+
+  <section class="patient-box">
+    <div>
+      <span class="label" data-label="name"></span>
+      <span class="value" data-text="patient.name"></span>
+    </div>
+    <div>
+      <span class="label" data-label="age"></span>
+      <span class="value" data-text="patient.ageYears"></span>
+    </div>
+    <div>
+      <span class="label" data-label="follow_up"></span>
+      <span class="value" data-text="rx.followUpDate"></span>
+    </div>
+  </section>
+
+  <section class="meds-box">
+    <div class="section-title" data-label="medications"></div>
+    <table class="meds">
+      <thead>
+        <tr><th>#</th><th data-label="instruction"></th><th data-label="duration"></th></tr>
+      </thead>
+      <tbody data-meds></tbody>
+    </table>
+  </section>
+
+  <section class="advice-box">
+    <div class="section-title" data-label="advice"></div>
+    <div data-advice></div>
+  </section>
+
+  <footer class="footer-grid">
+    <div class="small muted" data-label="print_footer"></div>
+    <div class="qr-box"><div data-qr></div><div data-label="verify"></div></div>
+  </footer>
+</article>

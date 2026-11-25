@@ -1,0 +1,109 @@
+<!-- WHO + FHIR aligned general Rx pad. Paper size set by .a4 / .a5 on .sheet -->
+<article class="sheet a5" data-template="general">
+  <header class="pad-header">
+    <div>
+      <h1 class="chamber-name" data-text="chamber.name">Chamber</h1>
+      <div class="chamber-meta">
+        <div data-text="chamber.address"></div>
+        <div>
+          <span data-text="chamber.phone"></span>
+          <span class="muted"> · </span>
+          <span data-text="chamber.hours"></span>
+        </div>
+      </div>
+    </div>
+    <div class="prescriber-block">
+      <p class="prescriber-name" data-text="prescriber.name"></p>
+      <div class="prescriber-meta" data-text="prescriber.qualification"></div>
+      <div class="bmdc"><span data-label="bmdc"></span>: <span data-text="prescriber.bmdc"></span></div>
+      <div class="prescriber-meta" data-text="prescriber.phone"></div>
+    </div>
+  </header>
+
+  <div class="meta-row">
+    <div><span class="rx-badge" data-label="rx_symbol">Rx</span></div>
+    <div><span class="label" data-label="date"></span><span class="value" data-text="rx.authoredOn"></span></div>
+    <div><span class="label" data-label="serial"></span><span class="value" data-text="visit.serial"></span></div>
+    <div><span class="label" data-label="version"></span><span class="value">v<span data-text="rx.version"></span></span></div>
+    <div><span class="variant-pill" data-label="prescription"></span></div>
+  </div>
+
+  <section class="patient-box">
+    <div>
+      <span class="label" data-label="name"></span>
+      <span class="value" data-text="patient.name"></span>
+    </div>
+    <div>
+      <span class="label" data-label="age"></span>
+      <span class="value"><span data-text="patient.ageYears"></span> <span data-label="years"></span></span>
+    </div>
+    <div>
+      <span class="label" data-label="sex"></span>
+      <span class="value" data-text="patient.sex"></span>
+    </div>
+    <div>
+      <span class="label" data-label="weight"></span>
+      <span class="value"><span data-text="patient.weightKg"></span> <span data-label="kg"></span></span>
+    </div>
+    <div>
+      <span class="label" data-label="phone"></span>
+      <span class="value" data-text="patient.phone"></span>
+    </div>
+    <div class="allergy">
+      <span class="label" data-label="allergies"></span>
+      <span class="value" data-text="patient.allergies"></span>
+    </div>
+  </section>
+
+  <section class="clinical-box">
+    <div class="section-title" data-label="diagnosis"></div>
+    <div><span class="muted" data-label="chief_complaint"></span>: <span data-text="rx.chiefComplaint"></span></div>
+    <div><strong data-text="rx.diagnosis"></strong></div>
+    <div class="small muted" style="margin-top:4px">
+      <span data-label="vitals"></span>:
+      <span data-label="bp"></span> <span data-text="visit.vitals.bp"></span> ·
+      <span data-label="pulse"></span> <span data-text="visit.vitals.pulse"></span> ·
+      <span data-label="temp"></span> <span data-text="visit.vitals.tempC"></span>°C ·
+      <span data-label="spo2"></span> <span data-text="visit.vitals.spo2"></span>%
+    </div>
+  </section>
+
+  <section class="meds-box">
+    <div class="section-title" data-label="medications"></div>
+    <table class="meds">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th data-label="medications"></th>
+          <th data-label="quantity"></th>
+        </tr>
+      </thead>
+      <tbody data-meds></tbody>
+    </table>
+  </section>
+
+  <section class="advice-box">
+    <div class="section-title" data-label="advice"></div>
+    <div data-advice></div>
+    <div style="margin-top:6px">
+      <span class="label" data-label="follow_up"></span>
+      <span class="value" data-text="rx.followUpDate"></span>
+    </div>
+    <div class="small muted" style="margin-top:4px" data-label="superseded_note"></div>
+  </section>
+
+  <footer class="footer-grid">
+    <div>
+      <div class="small muted" data-text="rx.id"></div>
+      <div class="small muted" data-label="print_footer"></div>
+    </div>
+    <div class="sign-line">
+      <div data-label="signature"></div>
+      <div class="small" data-text="prescriber.name"></div>
+    </div>
+    <div class="qr-box">
+      <div data-qr></div>
+      <div data-label="verify"></div>
+    </div>
+  </footer>
+</article>

@@ -1,0 +1,15 @@
+{
+  "id": "form.chronic",
+  "title": "Chronic / re-prescription form",
+  "extends": "form.general",
+  "description": "Optimised for diabetes, hypertension and long-term meds — one-click continue lines.",
+  "printTemplates": ["print.a4.chronic", "print.a5.chronic"],
+  "overrides": {
+    "defaultDuration": "30 days",
+    "actionsExtra": [
+      { "id": "continue_all", "label": "Continue all chronic meds" },
+      { "id": "mark_changed", "label": "Mark dose changed" }
+    ],
+    "rowFieldsPrefer": ["med.genericName", "med.dose", "med.frequency", "med.duration", "med.instruction"]
+  }
+}

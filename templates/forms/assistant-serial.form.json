@@ -1,0 +1,36 @@
+{
+  "id": "form.assistant_serial",
+  "title": "Assistant serial / fee form",
+  "description": "RBAC-safe: no diagnosis, meds, or clinical notes. For receptionist portal only.",
+  "localesSupported": ["en", "bn"],
+  "printTemplates": ["print.a5.serial_slip"],
+  "layout": {
+    "mode": "single-screen",
+    "columns": 12,
+    "sections": [
+      {
+        "id": "queue",
+        "titleKey": "serial_slip",
+        "fields": [
+          { "path": "patient.name", "span": 4, "widget": "text", "required": true },
+          { "path": "patient.ageYears", "span": 2, "widget": "number" },
+          { "path": "patient.sex", "span": 2, "widget": "select", "optionsRef": "sex" },
+          { "path": "patient.phone", "span": 4, "widget": "tel" },
+          { "path": "visit.serial", "span": 3, "widget": "text", "required": true },
+          { "path": "visit.fee", "span": 3, "widget": "number" },
+          { "path": "visit.vitals.bp", "span": 3, "widget": "text" },
+          { "path": "visit.vitals.pulse", "span": 3, "widget": "text" }
+        ]
+      }
+    ]
+  },
+  "forbiddenPaths": [
+    "rx.diagnosis",
+    "rx.advice",
+    "medications",
+    "patient.allergies"
+  ],
+  "optionSets": {
+    "sex": ["male", "female", "other", "unknown"]
+  }
+}

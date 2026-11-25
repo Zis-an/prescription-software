@@ -1,0 +1,90 @@
+{
+  "id": "form.general",
+  "title": "General prescription form",
+  "description": "In-app UI form template. Unbound JSON — map to any UI toolkit. Controls which fields appear in the Rx workbench.",
+  "localeDefault": "en",
+  "localesSupported": ["en", "bn"],
+  "printTemplates": ["print.a4.general", "print.a5.general"],
+  "layout": {
+    "mode": "single-screen",
+    "columns": 12,
+    "sections": [
+      {
+        "id": "patient",
+        "titleKey": "patient",
+        "columns": 12,
+        "fields": [
+          { "path": "patient.name", "span": 4, "widget": "text", "autofocus": true },
+          { "path": "patient.ageYears", "span": 2, "widget": "number", "min": 0 },
+          { "path": "patient.sex", "span": 2, "widget": "select", "optionsRef": "sex" },
+          { "path": "patient.weightKg", "span": 2, "widget": "number", "step": 0.1 },
+          { "path": "patient.phone", "span": 2, "widget": "tel" },
+          { "path": "patient.allergies", "span": 6, "widget": "text" },
+          { "path": "patient.id", "span": 3, "widget": "text", "readonly": true },
+          { "path": "visit.serial", "span": 3, "widget": "text" }
+        ]
+      },
+      {
+        "id": "clinical",
+        "titleKey": "diagnosis",
+        "columns": 12,
+        "fields": [
+          { "path": "rx.chiefComplaint", "span": 6, "widget": "textarea", "rows": 2 },
+          { "path": "rx.diagnosis", "span": 6, "widget": "textarea", "rows": 2 },
+          { "path": "visit.vitals.bp", "span": 3, "widget": "text" },
+          { "path": "visit.vitals.pulse", "span": 3, "widget": "text" },
+          { "path": "visit.vitals.tempC", "span": 3, "widget": "number", "step": 0.1 },
+          { "path": "visit.vitals.spo2", "span": 3, "widget": "number" }
+        ]
+      },
+      {
+        "id": "medications",
+        "titleKey": "medications",
+        "columns": 12,
+        "repeatable": "medications",
+        "keyboardHints": ["Arrow keys navigate cells", "Enter adds next drug line", "Ctrl+R re-prescribe last"],
+        "rowFields": [
+          { "path": "med.genericName", "span": 3, "widget": "drug-search", "required": true },
+          { "path": "med.brandName", "span": 2, "widget": "drug-search" },
+          { "path": "med.strength", "span": 1, "widget": "text", "required": true },
+          { "path": "med.form", "span": 1, "widget": "select", "optionsRef": "forms" },
+          { "path": "med.dose", "span": 1, "widget": "text", "required": true },
+          { "path": "med.frequency", "span": 1, "widget": "select", "optionsRef": "frequencies" },
+          { "path": "med.duration", "span": 1, "widget": "text", "required": true },
+          { "path": "med.instruction", "span": 2, "widget": "text" }
+        ],
+        "extraRowFields": [
+          { "path": "med.route", "span": 2, "widget": "select", "optionsRef": "routes" },
+          { "path": "med.quantity", "span": 2, "widget": "text" },
+          { "path": "med.instructionBn", "span": 4, "widget": "text" },
+          { "path": "med.prnMax", "span": 2, "widget": "text" },
+          { "path": "med.substitutionAllowed", "span": 2, "widget": "checkbox" }
+        ]
+      },
+      {
+        "id": "advice",
+        "titleKey": "advice",
+        "columns": 12,
+        "fields": [
+          { "path": "rx.advice", "span": 6, "widget": "textarea", "rows": 3 },
+          { "path": "rx.adviceBn", "span": 6, "widget": "textarea", "rows": 3 },
+          { "path": "rx.followUpDate", "span": 4, "widget": "date" },
+          { "path": "meta.locale", "span": 4, "widget": "select", "options": ["en", "bn"], "labelOverride": "Pad language" },
+          { "path": "meta.paper", "span": 4, "widget": "select", "options": ["a5", "a4"], "labelOverride": "Paper size" }
+        ]
+      }
+    ]
+  },
+  "optionSets": {
+    "sex": ["male", "female", "other", "unknown"],
+    "forms": ["Tablet", "Capsule", "Syrup", "Suspension", "Injection", "Cream", "Ointment", "Drops", "Inhaler", "Other"],
+    "routes": ["Oral", "IV", "IM", "SC", "Topical", "Inhalation", "Ocular", "Otic", "Nasal", "Rectal", "Other"],
+    "frequencies": ["Once daily", "Twice daily", "Three times daily", "Four times daily", "Every 6 hours", "Every 8 hours", "At bedtime", "When required (PRN)", "Weekly", "Other"]
+  },
+  "actions": [
+    { "id": "save_draft", "label": "Save draft" },
+    { "id": "sign_print", "label": "Sign & print" },
+    { "id": "share", "label": "Share SMS/QR" },
+    { "id": "represcribe", "label": "1-click re-Rx" }
+  ]
+}

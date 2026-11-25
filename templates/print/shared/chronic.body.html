@@ -1,0 +1,56 @@
+<article class="sheet a5" data-template="chronic">
+  <header class="pad-header">
+    <div>
+      <h1 class="chamber-name" data-text="chamber.name"></h1>
+      <div class="chamber-meta" data-text="chamber.address"></div>
+    </div>
+    <div class="prescriber-block">
+      <p class="prescriber-name" data-text="prescriber.name"></p>
+      <div class="bmdc"><span data-label="bmdc"></span>: <span data-text="prescriber.bmdc"></span></div>
+    </div>
+  </header>
+
+  <div class="chronic-flag">
+    Chronic / continuing medicines · <span data-label="follow_up"></span>: <strong data-text="rx.followUpDate"></strong>
+  </div>
+
+  <div class="meta-row">
+    <div><span class="rx-badge" data-label="rx_symbol"></span></div>
+    <div><span class="label" data-label="date"></span><span class="value" data-text="rx.authoredOn"></span></div>
+    <div><span class="label" data-label="name"></span> <span class="value" data-text="patient.name"></span></div>
+    <div><span class="label" data-label="age"></span> <span class="value" data-text="patient.ageYears"></span></div>
+  </div>
+
+  <section class="clinical-box">
+    <div class="section-title" data-label="diagnosis"></div>
+    <div data-text="rx.diagnosis"></div>
+    <div class="allergy" style="margin-top:4px">
+      <span class="label" data-label="allergies"></span>
+      <span class="value" data-text="patient.allergies"></span>
+    </div>
+  </section>
+
+  <section class="meds-box">
+    <div class="section-title" data-label="medications"></div>
+    <table class="meds">
+      <thead>
+        <tr><th>#</th><th data-label="medications"></th><th data-label="duration"></th></tr>
+      </thead>
+      <tbody data-meds></tbody>
+    </table>
+  </section>
+
+  <section class="advice-box">
+    <div class="section-title" data-label="advice"></div>
+    <div data-advice></div>
+  </section>
+
+  <footer class="footer-grid">
+    <div>
+      <div class="small muted" data-text="rx.id"></div>
+      <div class="small muted" data-label="superseded_note"></div>
+    </div>
+    <div class="sign-line"><div data-label="signature"></div></div>
+    <div class="qr-box"><div data-qr></div><div data-label="verify"></div></div>
+  </footer>
+</article>

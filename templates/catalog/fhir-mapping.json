@@ -1,0 +1,15 @@
+{
+  "title": "Optional FHIR export mapping from unbound payload",
+  "note": "Guidance only — implement when integrating DGHS Core FHIR. Not a runtime dependency.",
+  "maps": [
+    { "from": "patient.*", "to": "Patient" },
+    { "from": "prescriber.*", "to": "Practitioner" },
+    { "from": "chamber.*", "to": "Organization" },
+    { "from": "visit.*", "to": "Encounter" },
+    { "from": "rx + medications[]", "to": "MedicationRequest (+ Dosage)" },
+    { "from": "patient.allergies", "to": "AllergyIntolerance" },
+    { "from": "rx.diagnosis", "to": "Condition / MedicationRequest.reason" },
+    { "from": "visit.vitals.*", "to": "Observation" },
+    { "from": "rx.version / status", "to": "MedicationRequest.meta.versionId + status; priorPrescription on amend" }
+  ]
+}

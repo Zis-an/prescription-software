@@ -1,0 +1,250 @@
+/* Unbound Clinical OS print styles — edit freely. No framework dependency. */
+
+:root {
+  --pad-accent: #0b5f4b;
+  --pad-ink: #122018;
+  --pad-muted: #5a6b62;
+  --pad-line: #c9d5cf;
+  --pad-soft: #f3f7f5;
+  --pad-danger: #8b1e1e;
+  --pad-font: "Noto Sans Bengali", "Nikosh", "Kalpurush", "Segoe UI", Arial, sans-serif;
+  --pad-mono: "Consolas", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--pad-ink);
+  font-family: var(--pad-font);
+  background: #e8ecea;
+}
+
+.sheet {
+  background: #fff;
+  color: var(--pad-ink);
+  margin: 12px auto;
+  padding: 10mm 10mm 8mm;
+  position: relative;
+  box-shadow: 0 1px 6px rgba(0,0,0,.12);
+}
+
+.sheet.a4 {
+  width: 210mm;
+  min-height: 297mm;
+}
+
+.sheet.a5 {
+  width: 148mm;
+  min-height: 210mm;
+  padding: 7mm 7mm 6mm;
+  font-size: 11.5px;
+}
+
+.sheet.a4 { font-size: 12.5px; }
+
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .sheet {
+    margin: 0;
+    box-shadow: none;
+    page-break-after: always;
+  }
+  .sheet.a4 { width: 210mm; min-height: auto; }
+  .sheet.a5 { width: 148mm; min-height: auto; }
+}
+
+@page.a4 { size: A4 portrait; margin: 0; }
+@page.a5 { size: A5 portrait; margin: 0; }
+
+.pad-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  border-bottom: 2.5px solid var(--pad-accent);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.chamber-name {
+  font-size: 1.35em;
+  font-weight: 700;
+  color: var(--pad-accent);
+  margin: 0;
+}
+
+.chamber-meta, .prescriber-meta {
+  color: var(--pad-muted);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.prescriber-block { text-align: right; }
+.prescriber-name { font-weight: 700; margin: 0; }
+.bmdc { font-family: var(--pad-mono); font-size: 0.95em; }
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  justify-content: space-between;
+  margin: 6px 0 8px;
+  font-size: 0.95em;
+}
+
+.rx-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--pad-accent);
+  border-radius: 50%;
+  font-weight: 800;
+  font-style: italic;
+  color: var(--pad-accent);
+}
+
+.patient-box, .clinical-box, .advice-box, .meds-box {
+  border: 1px solid var(--pad-line);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 7px;
+  background: #fff;
+}
+
+.patient-box {
+  background: var(--pad-soft);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 4px 10px;
+}
+
+.sheet.a5 .patient-box {
+  grid-template-columns: 1fr 1fr;
+}
+
+.label {
+  display: block;
+  color: var(--pad-muted);
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.value { font-weight: 600; }
+
+.allergy .value { color: var(--pad-danger); }
+
+.section-title {
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--pad-accent);
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+table.meds {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.meds th,
+table.meds td {
+  border-bottom: 1px solid var(--pad-line);
+  padding: 4px 3px;
+  vertical-align: top;
+  text-align: left;
+}
+
+table.meds th {
+  color: var(--pad-muted);
+  font-size: 0.75em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.med-name { font-weight: 700; }
+.med-brand { color: var(--pad-muted); font-weight: 500; }
+.med-sig { font-size: 0.95em; }
+.med-bn { display: block; color: var(--pad-muted); font-size: 0.9em; margin-top: 1px; }
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr auto;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: end;
+}
+
+.sheet.a5 .footer-grid {
+  grid-template-columns: 1fr auto;
+}
+
+.sign-line {
+  border-top: 1px solid var(--pad-ink);
+  margin-top: 28px;
+  padding-top: 4px;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.qr-box {
+  width: 72px;
+  text-align: center;
+  font-size: 0.7em;
+  color: var(--pad-muted);
+}
+
+.qr-box img, .qr-box canvas {
+  width: 68px;
+  height: 68px;
+  display: block;
+  margin: 0 auto 3px;
+  border: 1px solid var(--pad-line);
+}
+
+.muted { color: var(--pad-muted); }
+.small { font-size: 0.85em; }
+
+.variant-pill {
+  display: inline-block;
+  border: 1px solid var(--pad-line);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.75em;
+  color: var(--pad-muted);
+}
+
+.weight-emphasis .value {
+  font-size: 1.15em;
+  color: var(--pad-accent);
+}
+
+.chronic-flag {
+  background: #eef6f2;
+  border-left: 3px solid var(--pad-accent);
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  font-size: 0.92em;
+}
+
+.serial-slip {
+  text-align: center;
+  padding-top: 18mm;
+}
+
+.serial-slip .big-serial {
+  font-size: 3.2em;
+  font-weight: 800;
+  color: var(--pad-accent);
+  margin: 10px 0;
+}
+
+.patient-share .pad-header { border-bottom-color: #2f6fed; }
+.patient-share .chamber-name { color: #2f6fed; }
+
+.hide-bn .i18n-bn-only { display: none !important; }
+.hide-en .i18n-en-only { display: none !important; }
