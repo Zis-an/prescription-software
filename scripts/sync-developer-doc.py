@@ -80,46 +80,10 @@ KNOWN_MODULES: list[dict[str, str]] = [
         "maturity": "Interactive prototype",
     },
     {
-        "name": "clinical-os-pages",
-        "path": "app-templates/admin/clinical-os-pages",
-        "role": "Admin HTML stubs (superseded by web-admin for live ops)",
-        "maturity": "Static stubs",
-    },
-    {
         "name": "prescription-template-kit",
         "path": "templates",
         "role": "Schemas, forms, A4/A5 pads, preview",
         "maturity": "Kit implemented; not wired to workbench print",
-    },
-    {
-        "name": "electron-shell (legacy)",
-        "path": "app-templates/desktop/electron-shell",
-        "role": "Early Electron stub",
-        "maturity": "Superseded",
-    },
-    {
-        "name": "adminlte",
-        "path": "app-templates/admin/adminlte",
-        "role": "Vendor Bootstrap admin",
-        "maturity": "Vendored (optional)",
-    },
-    {
-        "name": "tabler",
-        "path": "app-templates/admin/tabler",
-        "role": "Vendor modern admin (pnpm/turbo)",
-        "maturity": "Vendored (optional)",
-    },
-    {
-        "name": "novena",
-        "path": "app-templates/frontend/novena",
-        "role": "Vendor clinic marketing theme",
-        "maturity": "Vendored (optional)",
-    },
-    {
-        "name": "flutter_healthcare",
-        "path": "app-templates/mobile/flutter_healthcare",
-        "role": "Flutter UI reference",
-        "maturity": "Reference only",
     },
     {
         "name": "repo-scripts",

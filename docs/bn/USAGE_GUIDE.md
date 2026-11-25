@@ -262,7 +262,7 @@ $env:CLINICAL_OS_ENTRY="login"; npm run start
 
 ## ৬. প্ল্যাটফর্ম অ্যাডমিন
 
-ক্লিনিক্যাল ওএস ডিপ্লয়মেন্টের অপস কনসোল (`app-templates/admin/clinical-os-pages/`)।
+ক্লিনিক্যাল ওএস ডিপ্লয়মেন্টের অপস কনসোল (`apps/web-admin`)।
 
 ### ৬.১ সাইডবার মানচিত্র
 
@@ -323,7 +323,7 @@ python -m http.server 8765
 | পেশেন্ট শেয়ার | ফোন-বান্ধব আর্টিফ্যাক্ট |
 | ফার্মেসি ভেরিফাই | ডিসপেন্স নিশ্চয়তা সারফেস |
 
-ইউআই গ্যালারির জন্য মূল `VIEW_TEMPLATES.html` দেখুন।
+রোল প্যানেল `apps/web-*`; ডাক্তার UI `app-templates/frontend/clinical-os-doctor`।
 
 ---
 

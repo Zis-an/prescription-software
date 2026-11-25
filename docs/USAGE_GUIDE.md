@@ -263,7 +263,7 @@ Demo verify-style URL pattern used in the prototype:
 
 ## 6. Platform Admin
 
-Ops console for Clinical OS deployments (HTML stubs under `app-templates/admin/clinical-os-pages/`).
+Ops console for Clinical OS deployments (`apps/web-admin`).
 
 ### 6.1 Sidebar map
 
@@ -324,7 +324,7 @@ Open `http://localhost:8765/preview/` → switch template, A4/A5, EN/BN → Prin
 | Patient share | Phone-friendly artifact |
 | Pharmacy verify | Dispense confirmation surface |
 
-Also see root `VIEW_TEMPLATES.html` for a gallery of UI surfaces.
+Role panels live under `apps/web-*`; doctor UI under `app-templates/frontend/clinical-os-doctor`.
 
 ---
 

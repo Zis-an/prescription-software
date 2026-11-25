@@ -124,4 +124,4 @@ python scripts/sync-developer-doc.py --note "Short summary of what changed"
 ## License
 
 Application code: proprietary / UNLICENSED until decided.  
-Third-party UI kits under `app-templates/`: see `app-templates/LICENSES.md` (MIT / original stubs).
+Doctor UI under `app-templates/`: see `app-templates/LICENSES.md`.

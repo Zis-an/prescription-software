@@ -81,7 +81,7 @@ curl -s -X POST http://localhost:3001/auth/login \
 Panel branches intentionally delete unrelated apps. After platform changes on `main`:
 
 1. Merge or rebase `main` into `panel/<role>`.
-2. Re-delete paths that do not belong on that slice (other `apps/web-*`, vendor kits, etc.).
+2. Re-delete paths that do not belong on that slice (other `apps/web-*`, etc.).
 3. Keep the slice root README and (for doctor) the `dev` script that does not require other panels.
 4. Commit: `chore(panel/<role>): refresh slice from main`.
 
