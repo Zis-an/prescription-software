@@ -392,6 +392,7 @@ Local folders created on boot:
 | Doc | Purpose |
 |---|---|
 | [`WORKFLOW.md`](./WORKFLOW.md) | Full clinical/ops workflow |
+| [`ENTRY_POINTS.md`](./ENTRY_POINTS.md) | Mermaid diagrams — entry points & role workflows |
 | [`../DEVELOPMENT_PLAN.md`](../DEVELOPMENT_PLAN.md) | Product & engineering SDP |
 | [`../README.md`](../README.md) | Repo overview |
 | [`../apps/desktop/README.md`](../apps/desktop/README.md) | Desktop development |

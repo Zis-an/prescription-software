@@ -114,6 +114,7 @@ Details: [`apps/desktop/README.md`](apps/desktop/README.md)
 | [`docs/BRANCHING.md`](docs/BRANCHING.md) | Git branches, panel slices, demo tags |
 | [`docs/SCALE.md`](docs/SCALE.md) | Load-balance readiness (optional Compose) |
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | Clinical & operational workflow |
+| [`docs/ENTRY_POINTS.md`](docs/ENTRY_POINTS.md) | Mermaid diagrams — roles & visit flow |
 | [`docs/USAGE_GUIDE.md`](docs/USAGE_GUIDE.md) | Usage guide for all user types |
 | [`DEVELOPMENT_PLAN.md`](DEVELOPMENT_PLAN.md) | Product & engineering plan |
 | [`docs/bn/`](docs/bn/README.md) | বাংলা docs (মিশ্র বাংলা–ইংরেজি) |

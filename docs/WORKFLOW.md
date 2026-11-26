@@ -326,6 +326,7 @@ Product roadmap phases: see root [`DEVELOPMENT_PLAN.md`](../DEVELOPMENT_PLAN.md)
 |---|---|
 | [`DEVELOPER.md`](./DEVELOPER.md) | Developer handbook — architecture, modules, DB, tech |
 | [`SCALE.md`](./SCALE.md) | 200k-user load-balance readiness |
+| [`ENTRY_POINTS.md`](./ENTRY_POINTS.md) | Mermaid diagrams — entry points & role workflows |
 | [`USAGE_GUIDE.md`](./USAGE_GUIDE.md) | How each user type operates the product |
 | [`../DEVELOPMENT_PLAN.md`](../DEVELOPMENT_PLAN.md) | Full SDP — pillars, metrics, backlog |
 | [`../app-templates/frontend/clinical-os-doctor/README.md`](../app-templates/frontend/clinical-os-doctor/README.md) | Doctor UI pages |
