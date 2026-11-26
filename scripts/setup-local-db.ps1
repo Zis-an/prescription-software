@@ -1,4 +1,4 @@
-# Creates Clinical OS Postgres role + database on a native local server (no Docker).
+﻿# Creates Clinical OS Postgres role + database on a native local server (no Docker).
 # Requires: PostgreSQL installed, psql on PATH, superuser access.
 #
 # Usage:
@@ -48,8 +48,10 @@ if ($dbExists -ne '1') {
 }
 
 Write-Host "Ensuring extensions..."
-psql -U $PgUser -h $PgHost -p $PgPort -d $appDb -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;'
-psql -U $PgUser -h $PgHost -p $PgPort -d $appDb -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+psql -U $PgUser -h $PgHost -p $PgPort -d $appDb -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+$extSql = Join-Path $env:TEMP "clinicalos-ext.sql"
+Set-Content -Path $extSql -Value 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' -Encoding ascii
+psql -U $PgUser -h $PgHost -p $PgPort -d $appDb -f $extSql
 
 Write-Host ""
 Write-Host "Done. Use in .env:"
