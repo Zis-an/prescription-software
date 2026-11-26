@@ -1,305 +1,340 @@
-# ক্লিনিক্যাল ওএস (বাংলাদেশ) — সম্পূর্ণ ওয়ার্কফ্লো
+# Clinical OS (BD) — Full Workflow
 
-**পণ্য:** বাংলাদেশের জন্য একীভূত ক্লিনিক্যাল প্র্যাকটিস প্ল্যাটফর্ম  
-**স্লোগান:** এক ডাক্তার। এক রোগীর রেকর্ড। প্রতিটি চেম্বার।  
-**পাঠক:** প্রোডাক্ট, ইঞ্জিনিয়ারিং, ক্লিনিক অপস, কমপ্লায়েন্স  
+**প্রোডাক্ট:** Unified Clinical Practice Platform for Bangladesh  
+**ট্যাগলাইন:** One Doctor. One Patient Record. Every Chamber.  
+**দর্শক:** Product, engineering, clinic ops, compliance  
 
-এই নথিতে প্ল্যাটফর্মের শুরু-থেকে-শেষ ক্লিনিক্যাল ও অপারেশনাল ওয়ার্কফ্লো বর্ণনা করা হয়েছে। ধাপে ধাপে স্ক্রিন ও কীবোর্ড শর্টকাটের জন্য দেখুন **ব্যবহার নির্দেশিকা** (`USAGE_GUIDE.md`)।
+এই ডকুমেন্টে প্ল্যাটফর্ম যেসব end-to-end **clinical ও operational workflow** ঘিরে বানানো হয়েছে সেটা বর্ণনা করা হয়েছে। স্ক্রিন ও keyboard shortcut-এর step-by-step নির্দেশের জন্য [`USAGE_GUIDE.md`](./USAGE_GUIDE.md) দেখুন।
 
 ---
 
-## ১. ওয়ার্কফ্লো কীসের জন্য অপটিমাইজড
+## 1. Workflow কী optimize করে (What the workflow optimizes for)
 
-| লক্ষ্য | ওয়ার্কফ্লো কীভাবে সহায়তা করে |
+| Goal | Workflow কীভাবে সাহায্য করে |
 |---|---|
-| প্রায় ৬০ সেকেন্ডের মধ্যে প্রেসক্রাইব | এক-স্ক্রিন ওয়ার্কবেঞ্চ, ফাজি ড্রাগ সার্চ, এক-ক্লিক রি-আরএক্স |
-| লোডশেডিং টিকে থাকা | অফলাইন-ফার্স্ট লোকাল স্টোর → অনলাইন হলে ব্যাকগ্রাউন্ড সিঙ্ক |
-| চেম্বারজুড়ে একই চার্ট | মাস্টার পেশেন্ট প্রোফাইল; প্রেসক্রিপশন চেম্বারে বাঁধা, ইতিহাস শেয়ারড |
-| গোপনীয়তা রক্ষা | সহকারী শুধু কিউ/ভাইটাল/ফি দেখে — পূর্ণ চার্ট নয় |
-| অ্যাপ ছাড়াই রোগীতে পৌঁছানো | সাইন করা আরএক্সের এসএমএস / হোয়াটসঅ্যাপ / কিউআর শেয়ার |
-| প্রেসক্রিপশনের বিশ্বাসযোগ্যতা | সাইন → অপরিবর্তনীয় ভার্সন, অডিট ট্রেইল, ফার্মেসি কিউআর ভেরিফাই |
+| ~৬০ সেকেন্ডের মধ্যে prescribe | Single-screen workbench, fuzzy drug search, 1-click re-Rx |
+| Load-shedding সহ্য করা | Offline-first local store → online হলে background sync |
+| Chamber জুড়ে এক chart | Master patient profile; Rx chamber-এ bind কিন্তু history shared |
+| Privacy রক্ষা | Assistant শুধু queue/vitals/fees দেখে — full chart নয় |
+| App ছাড়া patient reach | Signed Rx-এর SMS / WhatsApp / QR share |
+| Prescription বিশ্বাসযোগ্য রাখা | Sign → immutable version, audit trail, pharmacy QR verify |
 
 ---
 
-## ২. ওয়ার্কফ্লোর অভিনেতা
+## 2. Workflow-এর actors
 
 ```
-রিসেপশনিস্ট/সহকারী → ডাক্তার (মালিক) → রোগী (এসএমএস/ডব্লিউএ/কিউআর)
-                         ↓
-              প্ল্যাটফর্ম অ্যাডমিন · ফার্মাসিস্ট
+┌──────────────┐     ┌─────────────────┐     ┌──────────────┐
+│ Receptionist │────▶│ Doctor (owner)  │────▶│   Patient    │
+│ / Assistant  │     │ Workbench + EHR │     │ SMS/WA/QR    │
+└──────────────┘     └────────┬────────┘     └──────┬───────┘
+                              │                     │
+                              ▼                     ▼
+                     ┌─────────────────┐     ┌──────────────┐
+                     │ Platform Admin  │     │  Pharmacist  │
+                     │ Drug KB · Audit │     │ Verify latest│
+                     └─────────────────┘     └──────────────┘
 ```
 
-| অভিনেতা | ওয়ার্কফ্লোতে প্রবেশ | বের হওয়ার ফল |
+| Actor | Workflow-এ কোথায় ঢোকে | কী নিয়ে যায় |
 |---|---|---|
-| **রিসেপশনিস্ট / সহকারী** | রোগী আগমন | সিরিয়াল স্লিপ, ফি, কিউতে ভাইটাল |
-| **ডাক্তার** | কিউ / পেশেন্ট সার্চ | সাইন করা আরএক্স (প্রিন্ট + ডিজিটাল শেয়ার) |
-| **রোগী** | শেয়ার লিংক বা কাগজের প্যাড | নির্দেশনা (ইং/বাং), ফলো-আপ তারিখ |
-| **ফার্মাসিস্ট** | কিউআর / ভেরিফাই ইউআরএল | সর্বশেষ আরএক্স ভার্সনের নিশ্চয়তা |
-| **প্ল্যাটফর্ম অ্যাডমিন** | অপস কনসোল | ডাক্তার, চেম্বার, ড্রাগ কেবি, অডিট, সেটিংস |
-| **ল্যাব পার্টনার** *(ফেজ ২+)* | রিপোর্ট পুশ | টাইমলাইনে অবজারভেশন সংযুক্ত |
+| **Receptionist / Assistant** | Patient arrival | Serial slip, fee, queue-তে vitals |
+| **Doctor** | Queue / patient search | Signed Rx (print + digital share) |
+| **Patient** | Share link বা paper pad | Instructions (EN/BN), follow-up date |
+| **Pharmacist** | QR / verify URL | Latest Rx version নিশ্চিতকরণ |
+| **Platform Admin** | Ops console | Doctors, chambers, drug KB, audit, org settings |
+| **Lab partner** *(Phase 2+)* | Report push | Timeline-এ attached observation |
 
 ---
 
-## ৩. মূল ভিজিট লাইফসাইকেল (হাপি পাথ)
+## 3. Core visit lifecycle (happy path)
 
-প্রাথমিক চেম্বার-দিনের লুপ:
+চেম্বারে এক দিনের মূল লুপ:
 
 ```
-আগমন → নিবন্ধন/খোঁজা → সিরিয়াল + ভাইটাল → পরামর্শ → আরএক্স রচনা
-     → সিডিএসএস চেক → সাইন ও ইস্যু → প্রিন্ট / শেয়ার → ফলো-আপ
+Arrival → Register/Find → Serial + Vitals → Consult → Compose Rx
+       → CDSS checks → Sign & Issue → Print / Share → Follow-up
 ```
 
-### ৩.১ রোগী আগমন
+### 3.1 Patient arrival
 
-১. রোগী চেম্বার রিসেপশনে আসেন।  
-২. সহকারী **মোবাইল নম্বর** বা **নাম** দিয়ে খোঁজেন।  
-৩. নতুন হলে: ডেমোগ্রাফিক্সসহ রোগী তৈরি (নাম, বয়স, লিঙ্গ, ফোন; বাংলা নাম ঐচ্ছিক)।  
-৪. পরিচিত হলে: মাস্টার প্রোফাইল খোলা (অ্যালার্জি, ক্রনিক অবস্থা চেম্বারজুড়ে যায়)।
+1. Patient চেম্বার reception-এ আসে।
+2. Assistant **mobile number** বা **name** দিয়ে search করে।
+3. নতুন হলে: demographics দিয়ে patient তৈরি (name, age, sex, phone; Bangla name optional)।
+4. চেনা হলে: master profile খোলে (allergy, chronic condition patient-এর সাথে chamber পার হয়ে যায়)।
 
-### ৩.২ কিউ / সিরিয়াল
+### 3.2 Queue / serial
 
-১. সহকারী আজকের **সিরিয়াল**, **কনসালটেশন ফি**, **ভাইটাল** (বিপি, পালস, টেম্প, SpO₂) নেন।  
-২. স্ট্যাটাস: **অপেক্ষমাণ → বর্তমান → সম্পন্ন**।  
-৩. ঐচ্ছিক: **সিরিয়াল স্লিপ** প্রিন্ট — আরব্যাক-নিরাপদ (ডায়াগনোসিস/মেডস/নোট নেই)।
+1. Assistant আজকের **serial** দেয়, **consultation fee** রেকর্ড করে, **vitals** নেয় (BP, pulse, temp, SpO₂ যা পাওয়া যায়)।
+2. Patient status: **Waiting → Current → Done**।
+3. Optional: **serial slip** print (`print.a5.serial_slip`) — RBAC-safe (diagnosis, meds, clinical notes নেই)।
 
-### ৩.৩ পরামর্শ (ডাক্তার)
+### 3.3 Consultation (doctor)
 
-১. ডাক্তার **কিউ** বা সক্রিয় রোগীসহ **ওয়ার্কবেঞ্চ** খোলেন।  
-২. অ্যালার্জি ব্যানার, পূর্ববর্তী প্রেসক্রিপশন, ক্রনিক মেডস, ভাইটাল দেখেন।  
-৩. **চিফ কমপ্লেইন্ট** ও **ডায়াগনোসিস** লেখেন।  
-৪. প্যাড ভাষা (ইং / বাং / দ্বিভাষিক) ও কাগজ (ডিফল্ট এ৫, ঐচ্ছিক এ৪) সেট করেন।
+1. Doctor **Queue** খোলে বা active patient নিয়ে সরাসরি **Workbench**।
+2. Allergy banner, আগের prescription, chronic meds, শেষ vitals দেখে।
+3. **Chief complaint** ও **diagnosis** লেখে।
+4. Pad language (EN / BN / bilingual) ও paper (ডিফল্ট A5, optional A4) সেট করে।
 
-### ৩.৪ প্রেসক্রিপশন রচনা
+### 3.4 Compose prescription
 
-১. **ডিজিডিএ / ডিজিএইচএস ড্রাগ নলেজ বেস** এ ফাজি সার্চ (অফলাইন ক্যাশ)।  
-২. মেডিকেশন লাইন: ডোজ, ফ্রিকোয়েন্সি, সময়কাল, ইংরেজি + বাংলা নির্দেশনা।  
-৩. ঐচ্ছিক: শেষ সাইন করা আরএক্স বা ক্রনিক প্যাক থেকে **এক-ক্লিক রি-প্রেসক্রাইব**।  
-৪. স্পেশালিটি টেমপ্লেট (জেনারেল, পেডিয়াট্রিক, ক্রনিক) ফিল্ড সিড করতে পারে।
+1. **DGDA / DGHS drug knowledge base**-এ fuzzy search (offline cache)।
+2. Medication line: dose, frequency, duration, English + Bangla instruction।
+3. Optional: শেষ signed Rx বা chronic pack থেকে **1-click re-prescribe**।
+4. Specialty / template form field seed করতে পারে (general, pediatric, chronic)।
 
-### ৩.৫ ক্লিনিক্যাল ডিসিশন সাপোর্ট (সিডিএসএস)
+**TODO:** medicine **favorites** ও recent drugs cache ভবিষ্যতে **প্রতি doctor** এবং **discipline-based** হবে (এখন global/demo স্তরে নয়)।
 
-যোগ ও সাইনের আগে মূল্যায়ন:
+### 3.5 Clinical decision support (CDSS)
 
-- অ্যালার্জি / একই শ্রেণির দ্বন্দ্ব (যেমন পেনিসিলিন-ক্লাস)  
-- ডুপ্লিকেট ইনগ্রিডিয়েন্ট  
-- উচ্চ-তীব্রতার ড্রাগ–ড্রাগ ইন্টারঅ্যাকশন *(ফেজ ২)*  
-- বয়স/ওজনভিত্তিক পেডিয়াট্রিক সহায়ক; গর্ভাবস্থা / রেনাল / হেপাটিক সতর্কতা *(ফেজ ২)*  
+Add-এর সময় (ও sign-এর আগে) সিস্টেম evaluate করে:
 
-**নিয়ম:** অ্যালার্ট সহায়ক। বিএমঅ্যান্ডডিসি-নিবন্ধিত ডাক্তার ওভাররাইড করতে পারেন; উচ্চ-তীব্রতার ওভাররাইড লগ হয়।
+- Allergy / same-class conflict (যেমন penicillin-class)
+- Duplicate ingredient
+- High-severity drug–drug interaction *(Phase 2 depth)*
+- Age/weight pediatric helper; pregnancy / renal / hepatic caution *(Phase 2)*
 
-### ৩.৬ সাইন ও ইস্যু
+**নিয়ম:** alert শুধু assistive। BMDC-নিবন্ধিত doctor override করতে পারেন; high-severity override log হয়।
 
-১. **সাইন ও প্রিন্ট** (বা ওয়ার্কবেঞ্চে `Ctrl+Enter`)।  
-২. আরএক্স **সাইনড**; নতুন **ভার্সন** তৈরি (সংশোধন = নতুন ভার্সন, পুরনো সুপারসিডেড)।  
-৩. অডিট ইভেন্ট (`rx.sign`)।  
-৪. লোকাল প্রিন্ট: চেম্বার প্যাড হেডার (নাম, বিএমঅ্যান্ডডিসি, ঠিকানা)।  
-৫. সমান্তরাল ডিজিটাল শেয়ার: এসএমএস / হোয়াটসঅ্যাপ / কিউআর।
+**Allergy chart:** **Doctor** workbench-এ patient-এর allergy chart **maintain/update করতে হবে**। **Assistant allergy chart edit বা সম্পূর্ণ allergy detail দেখতে পারবে না** — শুধু demographic, serial, fee, vitals।
 
-### ৩.৭ ভিজিটের পর
+### 3.6 Sign & issue
 
-| পথ | ফলাফল |
+1. Doctor **Sign & print** চাপে (workbench-এ `Ctrl+Enter`)।
+2. Rx **signed**; নতুন **version** mint (amend → নতুন version, পুরনো superseded)।
+3. Audit event (`rx.sign`)।
+4. Local print-এ chamber pad header (doctor name, BMDC, chamber address/fee branding)।
+5. পাশাপাশি digital share: SMS / WhatsApp / QR → patient view।
+
+### 3.7 After the visit
+
+| Path | Outcome |
 |---|---|
-| কাগজের প্যাড | রোগী/অ্যাটেনডেন্ট এ৫ (বা এ৪) নেন |
-| ডিজিটাল শেয়ার | লিংক খুলে নির্দেশনা, ফলো-আপ — অ্যাপ ইনস্টল নয় |
-| ফার্মেসি | কিউআর স্ক্যান → সর্বশেষ ভার্সন নিশ্চিত |
-| ফলো-আপ | তারিখ সংরক্ষিত; রিমাইন্ডার / ক্রনিক টাইমলাইন *(ফেজ ২)* |
-| অফলাইন | নেট না থাকলে সিঙ্ক আউটবক্সে থাকে ACK পর্যন্ত |
+| Paper pad | Patient / attendant A5 (বা A4) print নিয়ে যায় |
+| Digital share | Patient link খোলে — instruction, follow-up, app install নেই |
+| Pharmacy | QR scan → verify endpoint **latest** version confirm |
+| Follow-up | Follow-up date store; reminder / chronic timeline *(Phase 2)* |
+| Offline | Network down থাকলে Rx **sync outbox**-এ থাকে ack পর্যন্ত |
 
 ---
 
-## ৪. মাল্টি-চেম্বার ওয়ার্কফ্লো
+## 4. Multi-chamber workflow
 
 ```
-ডাক্তার অ্যাকাউন্ট
- ├── চেম্বার ক (যেমন গ্রিন লাইফ) — প্যাড, ফি, সময়, স্টাফ
- └── চেম্বার খ (যেমন সিটি হার্ট) — আলাদা প্যাড / ফি / সিরিয়াল
-         └── একই পেশেন্ট মাস্টার আইডি → শেয়ারড টাইমলাইন
+Doctor account
+ ├── Chamber A (e.g. Green Life) — pad header, fee ৳800, hours, staff
+ └── Chamber B (e.g. City Heart) — আলাদা pad / fee / serial
+         │
+         └── Same Patient master ID → দুই chamber-এ shared timeline
 ```
 
-১. সেশনের জন্য **সক্রিয় চেম্বার** বেছে নিন।  
-২. কিউ, ফি, প্যাড ব্র্যান্ডিং সেই চেম্বার অনুসারে।  
-৩. প্রেসক্রিপশনে `chamberId` থাকে; রোগীর ইতিহাস একীভূত থাকে।  
-৪. স্টাফ অ্যাকাউন্ট চেম্বার-স্কোপড; ক্লিনিক্যাল চার্ট শুধু ডাক্তারের।
+1. Session-এ **active chamber** বেছে নেয় (header chamber pill)।
+2. Queue, fee, pad branding ঐ chamber অনুযায়ী।
+3. Prescription-এ `chamberId` থাকে কিন্তু patient history unified।
+4. Staff account chamber অনুযায়ী scope; clinical chart doctor-only।
 
 ---
 
-## ৫. অফলাইন ও সিঙ্ক ওয়ার্কফ্লো
+## 5. Offline ও sync workflow
 
 ```
-লোকাল রাইট (অপটিমিস্টিক) → লোকাল প্রিন্ট ঠিক আছে → আউটবক্স কিউ
-        ↓ (অনলাইন হলে)
-   সিঙ্ক গেটওয়ে → সার্ভার অথরিটেটিভ আরএক্স ভার্সন → ACK → আউটবক্স খালি
+Local write (optimistic) → Local print OK → Outbox queue
+        │
+        ▼ (when online)
+   Sync gateway → Server authoritative Rx version → Ack → Clear outbox
 ```
 
-নীতিমালা:
+নীতি:
 
-১. ক্লায়েন্ট-জেনারেটেড আইডিসহ **অপটিমিস্টিক লোকাল রাইট**।  
-২. ইন্টারনেট ছাড়াই পূর্ণ প্রেসক্রাইব / সেভ / লোকাল প্রিন্ট।  
-৩. সিঙ্কের পর **সার্ভার আরএক্স ভার্সন নম্বরের মালিক**।  
-৪. সিঙ্ক চিপ: Online · synced / Offline / pending।  
-৫. ডিভাইসে PHI এনক্রিপ্টেড অ্যাট রেস্ট (প্রোডাকশন টার্গেট)।
+1. Client-generated ID দিয়ে **optimistic local write**।
+2. Internet ছাড়াই prescribe / save / local print।
+3. Sync-এর পর **server owns** Rx version number।
+4. Sync status chip: Online · synced / Offline / pending ops।
+5. Device-এ PHI encrypted at rest (production target)।
 
-ডেস্কটপ ডেটা রুট (ফেজ ০):  
+Desktop data root (Phase 0 shell):  
 `%APPDATA%/clinical-os-desktop/clinical-os/{db,cache,outbox}`
 
 ---
 
-## ৬. ভূমিকাভিত্তিক ওয়ার্কফ্লো
+## 6. Role-specific workflows
 
-### ৬.১ ডাক্তার (মালিক)
+### 6.1 Doctor (owner)
 
-| ধাপ | কাজ |
+| Step | Action |
 |---|---|
-| অনবোর্ড | ফোন ওটিপি + বিএমঅ্যান্ডডিসি যাচাই |
-| দৈনিক | চেম্বার বেছে কিউ বা ওয়ার্কবেঞ্চ |
-| প্রেসক্রাইব | রচনা → সিডিএসএস → সাইন ও প্রিন্ট / শেয়ার |
-| ইতিহাস | পেশেন্ট → পূর্ব আরএক্স → প্রয়োজনে রি-আরএক্স |
-| গভর্নেন্স | সংশোধনে অডিট; প্রস্থানে FHIR/PDF এক্সপোর্ট *(ফেজ ২)* |
+| Onboard | Phone OTP + BMDC registration verify |
+| Daily | Chamber বেছে নিন → Queue বা Workbench |
+| Prescribe | Compose → CDSS resolve → Sign & print / Share |
+| History | Patient খুলে prior Rx timeline → chronic হলে re-Rx |
+| Governance | Amend-এ audit; vendor ছাড়তে FHIR/PDF export *(Phase 2)* |
 
-### ৬.২ রিসেপশনিস্ট / সহকারী
+### 6.2 Receptionist / Assistant
 
-| ধাপ | কাজ |
+| Step | Action |
 |---|---|
-| চেক-ইন | রোগী খোঁজা/তৈরি (শুধু ডেমোগ্রাফিক্স) |
-| কিউ | সিরিয়াল, ফি, ভাইটাল |
-| প্রিন্ট | শুধু সিরিয়াল স্লিপ |
-| **নিষিদ্ধ** | ডায়াগনোসিস, অ্যাডভাইস, মেডিকেশন, অ্যালার্জি বিস্তারিত |
+| Check-in | Patient search / create (শুধু demographics) |
+| Queue | Serial, fee, vitals |
+| Print | শুধু serial slip |
+| **নিষিদ্ধ** | Diagnosis, advice, medications, allergy chart edit/view (full) |
 
-ফর্ম চুক্তি: `assistant-serial.form.json`  
-নিষিদ্ধ পাথ: `rx.diagnosis`, `rx.advice`, `medications`, `patient.allergies`
+Form contract: `templates/forms/assistant-serial.form.json`  
+`forbiddenPaths`: `rx.diagnosis`, `rx.advice`, `medications`, `patient.allergies`
 
-### ৬.৩ রোগী
+**Panel foundation:** `apps/web-assistant` — assistant/reception panel (queue, serial, vitals, fees); RBAC-এ clinical chart বাইরে।
 
-| ধাপ | কাজ |
+### 6.3 Patient
+
+| Step | Action |
 |---|---|
-| প্রাপ্তি | এসএমএস / হোয়াটসঅ্যাপ বা প্যাডের কিউআর |
-| খোলা | ব্রাউজার ভিউ — মেডস, বাংলা নির্দেশনা, ফলো-আপ |
-| ফার্মেসি | কিউআর / ভেরিফাই ইউআরএল দেখানো |
-| ইনস্টল? | **কখনোই প্রয়োজন নেই** |
+| Receive | SMS / WhatsApp বা pad-এ QR |
+| Open | Browser view — meds, Bangla instruction, follow-up |
+| Show pharmacy | QR / verify URL |
+| Install? | **কখনো লাগে না** |
 
-### ৬.৪ ফার্মাসিস্ট
+### 6.4 Pharmacist
 
-| ধাপ | কাজ |
+| Step | Action |
 |---|---|
-| স্ক্যান | প্যাড বা রোগীর শেয়ারের কিউআর |
-| যাচাই | আরএক্স আইডি + **সর্বশেষ ভার্সন** (সুপারসিডেড বাতিল) |
-| ডিসপেন্স | যাচাইকৃত মেডিকেশন লাইন অনুসারে |
+| Scan | Pad বা patient share-এ QR |
+| Verify | Rx id + **latest version** (superseded reject) |
+| Dispense | Verified medication line অনুযায়ী |
 
-### ৬.৫ প্ল্যাটফর্ম / ক্লিনিক্যাল ওএস অ্যাডমিন
+### 6.5 Platform / Clinical OS Admin
 
-| ধাপ | কাজ |
+| Step | Action |
 |---|---|
-| ডাক্তার | বিএমঅ্যান্ডডিসি রেজিস্ট্রি, প্ল্যান, স্ট্যাটাস |
-| চেম্বার | ঠিকানা, সময়, ডাক্তার লিংক |
-| ড্রাগ কেবি | ডিজিডিএ ফর্মুলারি রিলিজ কিউরেট |
-| অডিট | `rx.sign`, `rx.amend`, `assistant.login` |
-| সেটিংস | অর্গ নাম, প্যাড ডিফল্ট, এসএমএস/ডব্লিউএ টোকেন |
+| Doctors | BMDC, plan tier, status |
+| Chambers | Address, hours, doctor linkage |
+| Drug KB | DGDA formulary release browse/curate offline client-এর জন্য |
+| Audit | `rx.sign`, `rx.amend`, `assistant.login`, access events |
+| Settings | Org name, default pad language/paper, SMS/WhatsApp token, branding |
 
-### ৬.৬ ল্যাব পার্টনার *(ফেজ ২+)*
+### 6.6 Lab partner *(Phase 2+)*
 
-ডিজিটাল রিপোর্ট → টাইমলাইনে অবজারভেশন → পরবর্তী আরএক্সের আগে ডাক্তার দেখেন।
+Digital report attach → patient timeline-এ Observation → পরের Rx-এর আগে doctor দেখে।
 
 ---
 
-## ৭. প্রেসক্রিপশন স্টেট মেশিন
+## 7. Prescription state machine
 
 ```
-draft (খসড়া) → Sign → signed (সাইনড) → প্রিন্ট + শেয়ার + ফার্মেসি ভেরিফাই
-                      ↓ Amend
-              নতুন ভার্সন (সাইনড) + পুরনো সুপারসিডেড
+        ┌─────────┐
+        │  draft  │◀── workbench edits (local)
+        └────┬────┘
+             │ Sign
+             ▼
+        ┌─────────┐
+        │ signed  │──▶ print + share + pharmacy verify
+        └────┬────┘
+             │ Amend
+             ▼
+   new version (signed) + previous marked superseded
 ```
 
-- খসড়া সম্ভব হলে সিঙ্ক হয়; অফলাইন খসড়া হারায় না।  
-- সংশোধন ইতিহাস নীরবে মুছে ফেলে না — ভার্সন + অডিট।
+- Draft সম্ভব হলে sync; offline draft হারায় না।
+- Amend silently history rewrite করে না — version + audit।
 
 ---
 
-## ৮. ভিজিটে চলা ডেটা
+## 8. এক visit-এ যে data চলে
 
-| এনটিটি | কে তৈরি/আপডেট করে | নোট |
+| Entity | কে create/update করে | Notes |
 |---|---|---|
-| **Patient** | সহকারী বা ডাক্তার | চেম্বারজুড়ে মাস্টার আইডি |
-| **Encounter / Visit** | সহকারী (সিরিয়াল) + ডাক্তার (কমপ্লেইন্ট) | চেম্বার-স্কোপড সিরিয়াল |
-| **Observation (vitals)** | সহকারী | বিপি, পালস, টেম্প, SpO₂ |
-| **Prescription** | ডাক্তার | `draft` → `signed` (+ ভার্সন) |
-| **MedicationLine** | ডাক্তার | ড্রাগ, ডোজ, ফ্রিকোয়েন্সি, দিন, ইং/বাং নির্দেশনা |
-| **AlertEvent** | সিডিএসএস | ফায়ারড / ওভাররাইডেন |
-| **ShareLink** | শেয়ারে সিস্টেম | সাইনড শর্ট টোকেন |
-| **AuditLog** | সিস্টেম | অপরিবর্তনীয় |
-| **SyncOutbox** | অফলাইনে ক্লায়েন্ট | ACK পর্যন্ত পেন্ডিং |
+| **Patient** | Assistant বা Doctor | Chamber জুড়ে master ID |
+| **Encounter / Visit** | Assistant (serial) + Doctor (complaint) | Chamber-scoped serial |
+| **Observation (vitals)** | Assistant | BP, pulse, temp, SpO₂ |
+| **Prescription** | Doctor | `draft` → `signed` (+ version) |
+| **MedicationLine** | Doctor | Drug ref, dose, freq, days, EN/BN instruction |
+| **AlertEvent** | CDSS | Fired / overridden |
+| **ShareLink** | Share-এ system | Signed short token; SMS-এ minimal PII |
+| **AuditLog** | System | Immutable |
+| **SyncOutbox** | Offline-এ client | Ack পর্যন্ত pending ops |
 
-প্রিন্ট পেলোড চুক্তি: `prescription.schema.json`  
-আবশ্যক: `rx`, `prescriber`, `chamber`, `patient`, `medications`।
+Print payload contract: `templates/schemas/prescription.schema.json`  
+Required: `rx`, `prescriber`, `chamber`, `patient`, `medications`.
 
 ---
 
-## ৯. প্রিন্ট ও শেয়ার আর্টিফ্যাক্ট
+## 9. Print ও share artifacts
 
-| আর্টিফ্যাক্ট | টেমপ্লেট / সারফেস | কে ব্যবহার করে |
+| Artifact | Template ID / surface | ব্যবহারকারী |
 |---|---|---|
-| জেনারেল আরএক্স প্যাড | জেনারেল এ৫/এ৪ | ডাক্তার → রোগী |
-| পেডিয়াট্রিক / ক্রনিক প্যাড | স্পেশালিটি প্রিন্ট | ডাক্তার |
-| পেশেন্ট শেয়ার ভিউ | `print.patient_share` | রোগীর ফোন |
-| ফার্মেসি ভেরিফাই | `print.pharmacy_verify` | ফার্মাসিস্ট |
-| সিরিয়াল স্লিপ | `print.a5.serial_slip` | সহকারী → ওয়েটিং রুম |
+| General Rx pad | `print` general A5/A4 | Doctor → patient |
+| Pediatric / chronic pads | Specialty print templates | Doctor |
+| Patient share view | `print.patient_share` | Patient phone |
+| Pharmacy verify | `print.pharmacy_verify` | Pharmacist |
+| Serial slip | `print.a5.serial_slip` | Assistant → waiting room |
 
-লোকেল: ইংরেজি + বাংলা (`meta.locale`)। প্রিভিউ: `templates/preview/`।
-
----
-
-## ১০. ড্রাগ নলেজ ওয়ার্কফ্লো
-
-```
-ডিজিডিএ/ডিজিএইচএস সোর্স
-  → import-dgda-medicines.py
-  → dgda-drugs.js (~৪৯ হাজার হিউম্যান মেডিসিন)
-  → ডাক্তার ক্লায়েন্টে অফলাইন ক্যাশ
-  → ওয়ার্কবেঞ্চ ফাজি সার্চ (ব্র্যান্ড / জেনেরিক / DAR)
-  → অ্যাডমিন ড্রাগ কেবি কিউরেশন
-```
-
-ইউআই ফিল্টার: অ্যালোপ্যাথিক (ডিফল্ট), আয়ুর্বেদিক, হার্বল, হোমিওপ্যাথিক, ইউনানি, সব।
+Locales: `meta.locale` দিয়ে English + Bangla। Preview hub: `templates/preview/`.
 
 ---
 
-## ১১. সিস্টেম আর্কিটেকচার (ওয়ার্কফ্লো দৃশ্য)
+## 10. Drug knowledge workflow
 
 ```
-ডাক্তার পিডব্লিউএ / ইলেকট্রন · সহকারী পোর্টাল · রোগী/ফার্মেসি ভিউ
-        → অফলাইন ডিবি → সিঙ্ক / এপিআই গেটওয়ে
-        → অথ (ওটিপি + বিএমঅ্যান্ডডিসি) + আরব্যাক + অডিট
-        → ডোমেইন: আরএক্স · ইএইচআর · চেম্বার · সিডিএসএস · ড্রাগ কেবি · নোটিফাই · FHIR
-        → Postgres · অবজেক্ট স্টোরেজ · সার্চ · Redis জবস
+DGDA/DGHS source list
+    → scripts/import-dgda-medicines.py
+    → dgda-drugs.js (~49k human medicines)
+    → Offline cache on doctor client
+    → Workbench fuzzy search (brand / generic / DAR)
+    → Admin Drug KB curation for releases
+```
+
+**TODO(dgda-auto-import):** নতুন ওষুধ প্রকাশিত হলে automated DGDA → Postgres `medicines` upsert, offline pack refresh; Super Admin ranking preserve।
+
+UI-তে filterable system: Allopathic (default), Ayurvedic, Herbal, Homeopathic, Unani, All.
+
+---
+
+## 11. Workflow-এর system architecture
+
+```
+Doctor PWA / Electron     Assistant portal      Patient / Pharmacy view
+        │                        │                         │
+        └──────── offline DB ────┘                         │
+                 │                                         │
+                 ▼                                         ▼
+          Sync / API Gateway ◀──────── Auth (OTP + BMDC) + RBAC + Audit
+                 │
+                 ▼
+     Domain: Rx · EHR · Chamber · CDSS · Drug KB · Notify · FHIR I/O
+                 │
+                 ▼
+     Postgres · Object storage · Search · Redis jobs
 ```
 
 ---
 
-## ১২. বাস্তবায়ন অবস্থা (ওয়ার্কফ্লো ফিডেলিটি)
+## 12. Implementation status (workflow fidelity)
 
-| ওয়ার্কফ্লো অংশ | রিপোতে আজ | পরিকল্পিত |
+| Workflow piece | Repo-তে আজ | Planned |
 |---|---|---|
-| ডাক্তার লগইন (ডেমো ওটিপি) | হ্যাঁ (`123456`) | আসল ওটিপি + বিএমঅ্যান্ডডিসি |
-| কিউ + ভাইটাল ইউআই | হ্যাঁ (ডেমো ডিবি) | লাইভ মাল্টি-ইউজার কিউ |
-| ওয়ার্কবেঞ্চ + ডিজিডিএ সার্চ | হ্যাঁ | ফেভারিট / টেমপ্লেট গভীরতা |
-| অ্যালার্জি সিডিএসএস ডেমো | আংশিক | পূর্ণ সিভিয়ারিটি-র‍্যাঙ্কড সিডিএসএস |
-| সাইন ও প্রিন্ট / শেয়ার | ডেমো / ইলেকট্রন প্রিন্ট | অপরিবর্তনীয় ভার্সন + আসল এসএমএস/ডব্লিউএ |
-| মাল্টি-চেম্বার সেশন | ২ চেম্বার সিড | পূর্ণ সুইচ + চেম্বার স্টাফ |
-| অফলাইন সিঙ্ক | ডেস্কটপ ডির + আইপিসি স্টাব | এনক্রিপ্টেড SQLite + আউটবক্স |
-| সহকারী পোর্টাল | শুধু ফর্ম JSON | নিবেদিত আরব্যাক ইউআই |
-| রোগী / ফার্মেসি ভেরিফাই | ডেমো ইউআরএল | প্রোডাকশন ভেরিফাই এন্ডপয়েন্ট |
-| অ্যাডমিন অপস পেজ | HTML স্টাব | ব্যাকএন্ডে ওয়্যারড |
-| ল্যাব অ্যাটাচ / FHIR এক্সপোর্ট | স্পেক + ম্যাপিং | ফেজ ২–৪ |
+| Doctor login (demo OTP) | হ্যাঁ (`123456` + API JWT) | Real OTP + BMDC verify |
+| Queue + vitals UI | হ্যাঁ (demo DB + `web-assistant` API queue) | Live multi-user polish |
+| Workbench compose + DGDA search | হ্যাঁ (local + optional PG ranked search) | Favorites / templates depth (**per-doctor discipline favorites TODO**) |
+| Allergy CDSS demo | Partial | Full severity-ranked CDSS |
+| Sign & print / share buttons | Demo print + API sign/share/verify | Immutable versions + real SMS/WA |
+| Multi-chamber session | Seeded chambers (demo + PG) | Full switch + per-chamber staff |
+| Offline sync | Client outbox + `POST /sync/push` + sync chip (flush-এ API চালু লাগে) | Encrypted SQLite + conflict polish |
+| Assistant portal | `apps/web-assistant` (RBAC-safe foundation) | Deeper vitals/payments UX |
+| Patient / pharmacy verify | `web-patient` / `web-pharmacy` + API | Production SMS/QR delivery |
+| Admin ops + Super Admin ranking | `apps/web-admin` + PostgreSQL | Org billing, richer curation |
+| PostgreSQL + API / LB readiness | NestJS + optional Compose + k6 harness | PgBouncer, soak tests, multi-AZ |
+| Lab attach / FHIR export | Spec + mapping JSON | Phase 2–4 |
 
-রোডম্যাপ: মূল `DEVELOPMENT_PLAN.md` §৯–১০।
+Product roadmap phase: root [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) §9–10।
 
 ---
 
-## ১৩. সম্পর্কিত নথি
+## 13. Related docs
 
-| নথি | উদ্দেশ্য |
+| Doc | Purpose |
 |---|---|
-| `USAGE_GUIDE.md` | প্রতিটি ব্যবহারকারী কীভাবে ব্যবহার করবেন |
-| `DEVELOPMENT_PLAN.md` | পূর্ণ এসডিপি — পিলার, মেট্রিক্স, ব্যাকলগ |
-| ডাক্তার ইউআই README | ডাক্তার পেজসমূহ |
-| `templates/README.md` | প্রিন্ট/ফর্ম কিট |
-| ডেস্কটপ README | ইলেকট্রন ক্লায়েন্ট |
+| [`DEVELOPER.md`](./DEVELOPER.md) | Developer handbook — architecture, modules, DB, tech |
+| [`SCALE.md`](./SCALE.md) | 200k-user load-balance readiness |
+| [`USAGE_GUIDE.md`](./USAGE_GUIDE.md) | প্রতিটি user type প্রোডাক্ট কীভাবে চালায় |
+| [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) | Full SDP — pillars, metrics, backlog |
+| [`../app-templates/frontend/clinical-os-doctor/README.md`](../app-templates/frontend/clinical-os-doctor/README.md) | Doctor UI pages |
+| [`../templates/README.md`](../templates/README.md) | Print/form kit |
+| [`../apps/desktop/README.md`](../apps/desktop/README.md) | Electron client |

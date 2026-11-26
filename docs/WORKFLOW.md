@@ -1,4 +1,4 @@
-# Clinical OS (BD) — Full Workflow
+﻿# Clinical OS (BD) — Full Workflow
 
 **Product:** Unified Clinical Practice Platform for Bangladesh  
 **Tagline:** One Doctor. One Patient Record. Every Chamber.  
@@ -72,13 +72,14 @@ Arrival → Register/Find → Serial + Vitals → Consult → Compose Rx
 ### 3.3 Consultation (doctor)
 
 1. Doctor opens **Queue** or jumps to **Workbench** with the active patient.
-2. Reviews allergy banner, prior prescriptions, chronic meds, last vitals.
+2. Reviews allergy banner, prior prescriptions, chronic meds, last vitals. **Doctor owns allergy chart edits** (assistant cannot add/change allergies; doctor fixes gaps before Rx).
 3. Records **chief complaint** and **diagnosis**.
 4. Sets pad language (EN / BN / bilingual) and paper (A5 default, A4 optional).
 
 ### 3.4 Compose prescription
 
-1. Fuzzy search against the **DGDA / DGHS drug knowledge base** (offline cache).
+1. Fuzzy search against the **DGDA / DGHS drug knowledge base** (offline pack + optional API ranking).
+   <!-- TODO(medicine-cache-by-discipline): Per-doctor medicine favorites/recents cache keyed by doctor + clinical discipline (e.g. medicine vs peds), not a single global cache. -->
 2. Add medication lines: dose, frequency, duration, English + Bangla instructions.
 3. Optional: **1-click re-prescribe** from last signed Rx or chronic pack.
 4. Specialty / template forms may seed fields (general, pediatric, chronic).
@@ -92,14 +93,14 @@ On add (and before sign), the system evaluates:
 - High-severity drug–drug interactions *(Phase 2 depth)*
 - Age/weight pediatric helpers; pregnancy / renal / hepatic cautions *(Phase 2)*
 
-**Rule:** alerts are assistive. The BM&DC-registered doctor may override; high-severity overrides are logged.
+**Rule:** alerts are assistive. The BMDC-registered doctor may override; high-severity overrides are logged.
 
 ### 3.6 Sign & issue
 
 1. Doctor presses **Sign & print** (or `Ctrl+Enter` on workbench).
 2. Rx becomes **signed**; a new **version** is minted (amendments create a new version and supersede the old).
 3. Audit event recorded (`rx.sign`).
-4. Local print uses chamber pad header (doctor name, BM&DC, chamber address/fee branding).
+4. Local print uses chamber pad header (doctor name, BMDC, chamber address/fee branding).
 5. Parallel digital share: SMS / WhatsApp / QR deep link to patient view.
 
 ### 3.7 After the visit
@@ -159,7 +160,7 @@ Desktop data roots (Phase 0 shell):
 
 | Step | Action |
 |---|---|
-| Onboard | Phone OTP + BM&DC registration verify |
+| Onboard | Phone OTP + BMDC registration verify |
 | Daily | Select chamber → open Queue or Workbench |
 | Prescribe | Compose → resolve CDSS → Sign & print / Share |
 | History | Open patient → prior Rx timeline → re-Rx if chronic |
@@ -198,7 +199,7 @@ Form contract: `templates/forms/assistant-serial.form.json`
 
 | Step | Action |
 |---|---|
-| Doctors | Registry by BM&DC, plan tier, status |
+| Doctors | Registry by BMDC, plan tier, status |
 | Chambers | Addresses, hours, doctor linkage |
 | Drug KB | Browse / curate DGDA formulary releases for offline clients |
 | Audit | `rx.sign`, `rx.amend`, `assistant.login`, access events |
@@ -287,7 +288,7 @@ Doctor PWA / Electron     Assistant portal      Patient / Pharmacy view
         └──────── offline DB ────┘                         │
                  │                                         │
                  ▼                                         ▼
-          Sync / API Gateway ◀──────── Auth (OTP + BM&DC) + RBAC + Audit
+          Sync / API Gateway ◀──────── Auth (OTP + BMDC) + RBAC + Audit
                  │
                  ▼
      Domain: Rx · EHR · Chamber · CDSS · Drug KB · Notify · FHIR I/O
@@ -302,7 +303,7 @@ Doctor PWA / Electron     Assistant portal      Patient / Pharmacy view
 
 | Workflow piece | In repo today | Planned |
 |---|---|---|
-| Doctor login (demo OTP) | Yes (`123456` + API JWT) | Real OTP + BM&DC verify |
+| Doctor login (demo OTP) | Yes (`123456` + API JWT) | Real OTP + BMDC verify |
 | Queue + vitals UI | Yes (demo DB + `web-assistant` API queue) | Live multi-user polish |
 | Workbench compose + DGDA search | Yes (local + optional PG ranked search) | Favorites / templates depth |
 | Allergy CDSS demo | Partial | Full severity-ranked CDSS |

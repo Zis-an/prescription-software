@@ -1,4 +1,4 @@
-# Unbound Prescription Template Kit
+﻿# Unbound Prescription Template Kit
 
 Original, royalty-free templates for **Clinical OS (BD)** — usable in **web**, **desktop (WebView)**, and **mobile (WebView / native forms + HTML PDF)**.
 
@@ -19,7 +19,7 @@ Built from **public clinical norms**, not cloned commercial UI packs:
 
 1. **WHO** prescription essentials — prescriber identity + registration, date, patient name/age/sex/weight, diagnosis, allergy, drug generic/strength/form, route/dose/frequency/duration/quantity, directions, follow-up  
 2. **HL7 FHIR** concepts — `MedicationRequest`, `Patient`, `Practitioner`, `Dosage`, version/status for amendments  
-3. **BD chamber practice** — BM&DC number, A5 pad, Bangla patient instructions, QR verify, multi-chamber header hooks  
+3. **BD chamber practice** — BMDC number, A5 pad, Bangla patient instructions, QR verify, multi-chamber header hooks  
 
 Paid market products were **not copied**. Where competitors show useful *capabilities* (single-page pad, QR, bilingual advice), those capabilities are implemented here as **original layouts**.
 

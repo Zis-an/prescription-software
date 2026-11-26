@@ -1,10 +1,10 @@
-# Clinical OS — Doctor frontend
+﻿# Clinical OS — Doctor frontend
 
 Official chamber UI for the desktop/web doctor client.
 
 | Page | Purpose |
 |---|---|
-| `login.html` | BM&DC / OTP sign-in (demo OTP `123456`) |
+| `login.html` | BMDC / OTP sign-in (demo OTP `123456`) |
 | `workbench.html` | Single-screen Rx composer + DGDA drug search + CDSS allergy checks |
 | `patients.html` | Master patient registry + search |
 | `queue.html` | Today's serial queue with vitals |

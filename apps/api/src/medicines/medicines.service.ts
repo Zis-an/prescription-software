@@ -6,6 +6,8 @@ import { BulkRankingDto, SearchQueryDto, UpdateRankingDto } from "./dto/medicine
 // TODO(dgda-auto-import): Add sync endpoint/job so new DGDA products upsert into
 // `medicines` without a full manual re-seed. Ranking (boost_score / search_rank) should
 // be preserved for rows admins already tuned.
+// TODO(medicine-cache-by-discipline): Favorites/recents/search boosts must be per-doctor
+// and keyed by clinical discipline (cardiology vs peds, etc.), not a global cache.
 
 @Injectable()
 export class MedicinesService {

@@ -116,6 +116,7 @@ Details: [`apps/desktop/README.md`](apps/desktop/README.md)
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | Clinical & operational workflow |
 | [`docs/USAGE_GUIDE.md`](docs/USAGE_GUIDE.md) | Usage guide for all user types |
 | [`DEVELOPMENT_PLAN.md`](DEVELOPMENT_PLAN.md) | Product & engineering plan |
+| [`docs/bn/`](docs/bn/README.md) | বাংলা docs (মিশ্র বাংলা–ইংরেজি) |
 
 ```bash
 python scripts/sync-developer-doc.py --note "Short summary of what changed"

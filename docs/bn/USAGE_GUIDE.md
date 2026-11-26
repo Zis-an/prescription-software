@@ -1,44 +1,44 @@
-# ক্লিনিক্যাল ওএস (বাংলাদেশ) — ব্যবহার নির্দেশিকা
+# Clinical OS (BD) — Usage Guide
 
-**স্লোগান:** এক ডাক্তার। এক রোগীর রেকর্ড। প্রতিটি চেম্বার।  
-**যাদের জন্য:** ডাক্তার, রিসেপশনিস্ট/সহকারী, রোগী, ফার্মাসিস্ট, প্ল্যাটফর্ম অ্যাডমিন  
+**ট্যাগলাইন:** One Doctor. One Patient Record. Every Chamber.  
+**কাদের জন্য:** Doctors, receptionists/assistants, patients, pharmacists, platform admins  
 
-এই নির্দেশিকায় দৈনন্দিন **কীভাবে ব্যবহার করবেন** বলা হয়েছে। প্রক্রিয়া ডিজাইনের জন্য দেখুন **ওয়ার্কফ্লো** (`WORKFLOW.md`)।
+এই গাইডে Clinical OS **দৈনন্দিন কীভাবে ব্যবহার করবেন** — সেটা বর্ণনা করা হয়েছে। End-to-end process design-এর জন্য [`WORKFLOW.md`](./WORKFLOW.md) দেখুন।
 
-> **ডেমো নোট:** বর্তমান ডাক্তার অ্যাপ একটি ইন্টারঅ্যাকটিভ প্রোটোটাইপ (localStorage + ডিজিডিএ ফর্মুলারি)। ডেমো ওটিপি `123456`। *(পরিকল্পিত)* চিহ্নিত ফিচার ব্যাকএন্ডে পুরোপুরি যুক্ত নয়।
-
----
-
-## সূচিপত্র
-
-১. শুরু করা  
-২. ডাক্তার  
-৩. রিসেপশনিস্ট / সহকারী  
-৪. রোগী  
-৫. ফার্মাসিস্ট  
-৬. প্ল্যাটফর্ম অ্যাডমিন  
-৭. প্রিন্ট টেমপ্লেট ও প্রিভিউ  
-৮. ডেস্কটপ অ্যাপ  
-৯. কীবোর্ড চিট শিট  
-১০. সমস্যা সমাধান  
+> **Demo note:** বর্তমান doctor app একটা interactive prototype (localStorage + DGDA formulary)। Demo OTP `123456`। *(planned)* চিহ্নিত ফিচার ডিজাইন আছে কিন্তু backend-এ পুরো wire হয়নি। **ডিফল্ট DB:** native local **PostgreSQL**; Docker optional।
 
 ---
 
-## ১. শুরু করা
+## Table of contents
 
-### ১.১ কে কী ব্যবহার করবেন
+1. [Getting started](#1-getting-started)
+2. [Doctor](#2-doctor)
+3. [Receptionist / Assistant](#3-receptionist--assistant)
+4. [Patient](#4-patient)
+5. [Pharmacist](#5-pharmacist)
+6. [Platform Admin](#6-platform-admin)
+7. [Print templates & previews](#7-print-templates--previews)
+8. [Desktop app](#8-desktop-app)
+9. [Keyboard cheat sheet](#9-keyboard-cheat-sheet)
+10. [Troubleshooting](#10-troubleshooting)
+
+---
+
+## 1. Getting started
+
+### 1.1 কে কী ব্যবহার করবেন (Who should use what)
 
 | আপনি… | ব্যবহার করুন |
 |---|---|
-| প্রেসক্রাইবিং ডাক্তার | **ডাক্তার অ্যাপ** — ওয়ার্কবেঞ্চ, পেশেন্টস, কিউ (ডেস্কটপ বা ব্রাউজার) |
-| রিসেপশন / সহকারী | **সহকারী পোর্টাল** *(পরিকল্পিত)* — শুধু সিরিয়াল, ফি, ভাইটাল |
-| রোগী | **শেয়ার লিংক / কিউআর / কাগজের প্যাড** — ইনস্টল নয় |
-| ফার্মাসিস্ট | আরএক্সের **ভেরিফাই কিউআর / ইউআরএল** |
-| ক্লিনিক / প্ল্যাটফর্ম অপস | **অ্যাডমিন পেজ** — ডাক্তার, চেম্বার, ড্রাগ কেবি, অডিট, সেটিংস |
+| Prescribing doctor | **Doctor app** — Workbench, Patients, Queue (desktop বা browser) |
+| Reception / assistant | **`apps/web-assistant`** assistant panel — serial, fee, vitals; clinical chart নয় |
+| Patient | **Share link / QR / paper pad** — install নেই |
+| Pharmacist | Rx-এ **Verify QR / URL** |
+| Clinic / platform ops | **Admin pages** — doctors, chambers, drug KB, audit, settings |
 
-### ১.২ ডাক্তার ডেমো চালু (আজ)
+### 1.2 Doctor demo চালু করা (আজ)
 
-**ডেস্কটপ (সুপারিশকৃত):**
+**Desktop (সুপারিশকৃত):**
 
 ```bash
 cd apps/desktop
@@ -46,349 +46,372 @@ npm install
 npm run dev
 ```
 
-**লগইন স্ক্রিন স্পষ্টভাবে:**
+**Login screen স্পষ্টভাবে:**
 
 ```powershell
 cd apps/desktop
 $env:CLINICAL_OS_ENTRY="login"; npm run start
 ```
 
-**ব্রাউজার:**  
-`app-templates/frontend/clinical-os-doctor/` এর যেকোনো পেজ খুলুন (যেমন `login.html`)।
+**Browser:**  
+`app-templates/frontend/clinical-os-doctor/` এর নিচে যেকোনো page (যেমন `login.html`)।
 
-### ১.৩ প্রথম সাইন-ইন (ডাক্তার ডেমো)
+### 1.3 প্রথম sign-in (doctor demo)
 
-১. **সাইন ইন** খুলুন।  
-২. মোবাইল নম্বর ও বিএমঅ্যান্ডডিসি সংক্রান্ত ফিল্ড পূরণ করুন।  
-৩. ওটিপি **`123456`** দিন → চালিয়ে যান।  
-৪. ডেমো ডাক্তার **ডা. আয়েশা রহমান** (বিএমঅ্যান্ডডিসি A-54321), সক্রিয় চেম্বার **গ্রিন লাইফ চেম্বার**।
+1. **Sign in** খুলুন।
+2. Mobile number (demo-তে pre-filled) ও BMDC-related field দিন।
+3. OTP **`123456`** → continue।
+4. Chamber session-এ ঢুকবেন demo doctor **Dr. Ayesha Rahman** (BMDC A-54321), active chamber **Green Life Chamber**।
 
-লগইনে সহায়ক-সফটওয়্যার নোটিশ: চূড়ান্ত প্রেসক্রাইবিং কর্তৃত্ব নিবন্ধিত চিকিৎসকের।
+Login-এ assistive-software notice: চূড়ান্ত prescribing authority নিবন্ধিত medical practitioner-এর।
 
-### ১.৪ ডেমো ডেটা রিসেট
+### 1.4 Demo data reset
 
-- **পেশেন্টস** পেজ → **Reset demo data**, অথবা  
-- **লগইন** → **Load demo session**
+- **Patients** page → **Reset demo data**, অথবা  
+- **Login** → **Load demo session**
 
-১২ নমুনা রোগী, সিরিয়াল ৪৪–৫২, খসড়া/সাইনড আরএক্স, দুই চেম্বার ফিরে আসে।
+১২ sample patient, queue serial 44–52, draft/signed Rx, দুই chamber ফিরে আসে।
+
+### 1.5 API + panels (foundation)
+
+Native **PostgreSQL** + NestJS API চালু থাকলে role panel JWT দিয়ে API-তে কথা বলে:
+
+```bash
+# একবার — docs/LOCAL_SETUP.md
+cd apps/api && npm install && npx prisma migrate deploy && npx prisma db seed && npm run start:dev
+```
+
+Assistant panel: `cd apps/web-assistant && npm run dev` (reception/queue foundation)।
 
 ---
 
-## ২. ডাক্তার
+## 2. Doctor
 
-প্রাথমিক ক্রেতা/ব্যবহারকারী। পূর্ণ ক্লিনিক্যাল চার্ট, প্রেসক্রাইবিং, সিডিএসএস, প্রিন্ট ও শেয়ার।
+Primary buyer/user। Full clinical chart, prescribing, CDSS, print, share।
 
-### ২.১ নেভিগেশন
+### 2.1 Navigation
 
-লগইনের পর হেডার:
+Login-এর পর header সবসময়:
 
-| কন্ট্রোল | উদ্দেশ্য |
+| Control | কাজ |
 |---|---|
-| **Workbench** | এক-স্ক্রিন আরএক্স কম্পোজার |
-| **Patients** | মাস্টার পেশেন্ট রেজিস্ট্রি |
-| **Queue** | আজকের সিরিয়াল + ভাইটাল |
-| চেম্বার পিল | সক্রিয় চেম্বার + আপনার বিএমঅ্যান্ডডিসি |
-| সিঙ্ক চিপ | Online · synced / Offline |
-| **Sign out** | লগইনে ফেরা |
+| **Workbench** | Single-screen Rx composer |
+| **Patients** | Master patient registry |
+| **Queue** | আজকের serial list + vitals |
+| Chamber pill | Active chamber name + আপনার BMDC |
+| Sync chip | Online · synced / Offline |
+| **Sign out** | Login-এ ফিরে যান |
 
-### ২.২ দৈনিক চেম্বার রুটিন
+### 2.2 দৈনিক chamber routine
 
-১. হেডার পিলে **সক্রিয় চেম্বার** নিশ্চিত করুন।  
-২. **Queue** খুলুন — Waiting / Current / Done দেখুন।  
-৩. বর্তমান রোগী বেছে **Prescribe** / **Workbench** এ চার্ট খুলুন।  
-৪. আরএক্স শেষ → **Sign & print** এবং/অথবা **Share SMS / QR**।  
-৫. পরবর্তী সিরিয়ালে যান।
+1. Header pill-এ **active chamber** নিশ্চিত করুন (pad branding, fee ঐ chamber অনুযায়ী)।
+2. **Queue** — Waiting / Current / Done।
+3. Current patient বেছে **Prescribe** / **Workbench**-এ chart।
+4. Rx শেষ → **Sign & print** ও/বা **Share SMS / QR**।
+5. পরের serial।
 
-### ২.৩ পেশেন্ট রেজিস্ট্রি
+### 2.3 Patient registry
 
-**Patients** পেজ:
+**Patients** page:
 
-১. নাম, মোবাইল, অবস্থা বা অ্যালার্জি দিয়ে খুঁজুন।  
-২. ডেমোগ্রাফিক্স, অ্যালার্জি, ক্রনিক অবস্থা দেখুন।  
-৩. **Open chart** → সেই রোগীসহ ওয়ার্কবেঞ্চ।  
-৪. যেকোনো জায়গা থেকে দ্রুত যেতে **Ctrl/Cmd+K**।
+1. Name, mobile, condition, allergy দিয়ে search।
+2. Demographics, allergies, chronic conditions review।
+3. **Open chart** → Workbench-এ active patient।
+4. যেকোনো জায়গা থেকে **Ctrl/Cmd+K** → দ্রুত Patients।
 
-### ২.৪ ওয়ার্কবেঞ্চ — প্রেসক্রাইব
+**Allergy chart:** allergy তালিকা **doctor workbench-এ update/maintain করতে হবে**। Assistant portal allergy edit করে না।
 
-লেআউট (এক স্ক্রিন):
+### 2.4 Workbench — prescribe
 
-| এলাকা | আপনি যা করেন |
+এক স্ক্রিন layout:
+
+| Area | কী করবেন |
 |---|---|
-| কিউ সাইডবার | আজকের রোগীদের মধ্যে লাফ |
-| পেশেন্ট প্যানেল | পরিচয়, অ্যালার্জি, ভাইটাল নিশ্চিত |
-| ক্লিনিক্যাল ফিল্ড | চিফ কমপ্লেইন্ট, ডায়াগনোসিস, অ্যাডভাইস (ইং/বাং), ফলো-আপ |
-| মেডিকেশনস | ডিজিডিএ সার্চ → লাইন যোগ (ডোজ, ফ্রিকোয়েন্সি, দিন, নির্দেশনা) |
-| পূর্ব প্রেসক্রিপশন | ইতিহাস; পূর্ব আরএক্স লোড |
-| সাইন ও ইস্যু | Sign & print · Share · Re-prescribe last |
-| প্রেসক্রাইবার | নাম, বিএমঅ্যান্ডডিসি, সক্রিয় চেম্বার ঠিকানা |
+| Queue sidebar | আজকের patient-এর মধ্যে jump |
+| Patient panel | Identity, allergy, vitals confirm |
+| Clinical fields | Chief complaint, diagnosis, advice (EN/BN), follow-up date |
+| Medications | DGDA formulary search → line (dose, freq, days, instruction) |
+| Prior prescriptions | History; prior Rx load |
+| Sign & issue | Sign & print · Share · Re-prescribe last |
+| Prescriber | Name, BMDC, active chamber address |
 
 **ওষুধ যোগ**
 
-১. ড্রাগ সার্চে ফোকাস (`/` — অন্য ইনপুটে টাইপ না করলে)।  
-২. ব্র্যান্ড, জেনেরিক বা DAR টাইপ করুন।  
-৩. সিস্টেম ফিল্টার: অ্যালোপ্যাথিক (ডিফল্ট), আয়ুর্বেদিক, হার্বল, হোমিও, ইউনানি, সব।  
-৪. প্রোডাক্ট বেছে ডোজ / ফ্রিকোয়েন্সি / সময়কাল / নির্দেশনা পূরণ।  
-৫. **অ্যালার্জি / পেনিসিলিন-ক্লাস** ব্যানার দেখুন — ক্লিনিক্যালি যৌক্তিক হলেই ওভাররাইড *(প্রোডাকশনে লগ)*।
+1. Drug search focus (`/` — অন্য input-এ না থাকলে)।
+2. Brand, generic, বা DAR টাইপ।
+3. Optional system filter: Allopathic (default), Ayurvedic, Herbal, Homeopathic, Unani, All.
+4. Product বেছে dose / frequency / duration / instruction।
+5. **Allergy / penicillin-class** (ও অনুরূপ) banner দেখুন — clinical justification থাকলেই override *(production-এ log)*।
 
-**রি-প্রেসক্রাইব**
+API `CLINICAL_OS_API_URL` থাকলে medicine search PostgreSQL ranking ব্যবহার করে। Bulk medicine sync-এর জন্য **TODO(dgda-auto-import)** দেখুন developer doc।
 
-- **1-click re-prescribe last** — এই রোগীর শেষ **সাইনড** আরএক্স লোড।  
-- না থাকলে অ্যাপ সতর্ক করে।
+**Favorites (ভবিষ্যৎ):** **TODO** — medicine favorites/recent cache **per-doctor** এবং **discipline-based** হবে; এখন prototype-এ সীমিত।
 
-**সাইন ও প্রিন্ট**
+**Re-prescribe**
 
-১. লাইন ও সিডিএসএস ব্যানার রিভিউ।  
-২. **Sign & print** বা **Ctrl+Enter**।  
-৩. প্রিন্ট ডায়ালগ (ব্রাউজার বা ইলেকট্রন)।  
-৪. প্রয়োজনে সাইনের আগে ভাষা / কাগজ বেছে নিন (বিডি চেম্বারে ডিফল্ট এ৫; এ৪ সমর্থিত)।
+- **1-click re-prescribe last** → এই patient-এর শেষ **signed** Rx load।
+- না থাকলে warning।
 
-**ডিজিটাল শেয়ার**
+**Sign & print**
 
-১. **Share SMS / QR** ক্লিক।  
-২. রোগী লিংক পান (ডেমোতে ভেরিফাই-স্টাইল ইউআরএল)।  
-৩. রোগীর অ্যাপ ইনস্টল লাগে না।
+1. Line ও CDSS banner review।
+2. **Sign & print** বা **Ctrl+Enter**।
+3. Print dialog (browser বা Electron native print)।
+4. Sign-এর আগে pad language / paper (BD chamber-এ ডিফল্ট A5; A4 supported)।
 
-### ২.৫ মাল্টি-চেম্বার
+**Share digitally**
 
-- এক ডাক্তার অ্যাকাউন্ট → একাধিক চেম্বার (ডেমো: গ্রিন লাইফ সক্রিয়, সিটি হার্ট সিডে)।  
-- চেম্বার সুইচ করলে আরএক্সে `chamberId` থাকে।  
-- রোগীর ইতিহাস একীভূত — চেম্বারপ্রতি ডুপ্লিকেট রোগী তৈরি করবেন না; আগে মোবাইল দিয়ে খুঁজুন।
+1. **Share SMS / QR**।
+2. Patient link পায় (demo-তে verify-style URL)।
+3. Patient app install লাগে না।
 
-### ২.৬ অফলাইন প্রেসক্রাইবিং
+### 2.5 Multi-chamber
 
-১. সিঙ্ক চিপ **Offline** হলেও লোকালি প্রেসক্রাইব ও প্রিন্ট চালিয়ে যান।  
-২. পরিবর্তন আউটবক্সে জমা থাকে *(প্রোডাকশন)* নেট ফেরা পর্যন্ত।  
-৩. প্যাড যেন কানেক্টিভিটিতে আটকে না যায় — লোকালি **Sign** সম্পন্ন করুন।
+- এক doctor account → একাধিক chamber (demo: Green Life active, City Heart seed-এ)।
+- Chamber switch UI build অনুযায়ী; Rx-এ `chamberId` label।
+- Patient history unified — chamber প্রতি duplicate patient নয়; আগে mobile দিয়ে search।
 
-### ২.৭ নিরাপত্তা ও কমপ্লায়েন্স (ডাক্তারের দায়)
+### 2.6 Offline prescribing
 
-- সিডিএসএসকে **সহায়ক** ধরুন, স্বয়ংক্রিয় প্রেসক্রাইবিং নয় (বিএমঅ্যান্ডডিসি)।  
-- অনিশ্চয়তায় অ্যালার্জি ও গর্ভাবস্থা/ল্যাকটেশন মৌখিকভাবে নিশ্চিত করুন।  
-- প্যাডে জেনেরিক + স্ট্রেংথ স্পষ্ট রাখুন।  
-- সাইনড আরএক্স সংশোধনে **নতুন ভার্সন** আশা করুন; রোগী/ফার্মেসিকে জানান পুরনো প্রিন্ট সুপারসিডেড হতে পারে *(ফেজ ২ ভেরিফাই)*।
+1. Sync chip **Offline** হলেও locally prescribe ও print চালিয়ে যান।
+2. Change outbox-এ queue *(production)* যতক্ষণ network নেই।
+3. Connectivity-এর জন্য pad আটকে না রেখে locally **Sign** complete করার চেষ্টা করুন।
+
+### 2.7 Safety & compliance (doctor দায়িত্ব)
+
+- CDSS **assistance**, autonomous prescribing নয় (BMDC)।
+- Allergy ও pregnancy/lactation verbally confirm যখন নিশ্চিত নন।
+- Pad-এ generic + strength স্পষ্ট রাখুন।
+- Signed Rx **amend** করলে **নতুন version**; patient/pharmacy-কে পুরনো print superseded হতে পারে জানান *(Phase 2 verify)*।
 
 ---
 
-## ৩. রিসেপশনিস্ট / সহকারী
+## 3. Receptionist / Assistant
 
-ফ্রন্ট ডেস্ক স্টাফ। **ডায়াগনোসিস, মেডিকেশন, অ্যাডভাইস বা অ্যালার্জি চার্টে প্রবেশাধিকার নেই।**
+Front desk staff role। **Diagnosis, medications, advice, বা allergy chart-এ access/edit নেই।**
 
-### ৩.১ আপনি যা করতে পারেন
+### 3.1 কী করতে পারবেন
 
-| কাজ | অনুমোদিত |
+| Task | Allowed |
 |---|---|
-| নাম, বয়স, লিঙ্গ, ফোন দিয়ে খোঁজা/নিবন্ধন | হ্যাঁ |
-| ভিজিট সিরিয়াল দেওয়া | হ্যাঁ |
-| ফি রেকর্ড | হ্যাঁ |
-| ভাইটাল (বিপি, পালস, …) | হ্যাঁ |
-| সিরিয়াল স্লিপ প্রিন্ট | হ্যাঁ |
-| ডায়াগনোসিস / মেডস / অ্যালার্জি / ক্লিনিক্যাল নোট | **না** |
+| Patient name, age, sex, phone search / register | Yes |
+| Visit serial দেওয়া | Yes |
+| Fee record | Yes |
+| Vitals (BP, pulse, …) | Yes |
+| Serial slip print | Yes |
+| Diagnosis / meds / allergies / clinical notes দেখা বা allergy edit | **No** |
 
-### ৩.২ চেক-ইন ধাপ *(পণ্য ডিজাইন; সহকারী পোর্টাল পরিকল্পিত)*
+### 3.2 Check-in steps
 
-১. স্টাফ ক্রেডেনশিয়াল দিয়ে সাইন ইন (ডাক্তার মালিক লগইন নয়)।  
-২. মোবাইল দিয়ে রোগী খুঁজুন → নতুন হলে তৈরি (শুধু ডেমোগ্রাফিক্স)।  
-৩. **সিরিয়াল**, **ফি**, **ভাইটাল** দিন।  
-৪. ডাক্তার **Queue**-এ Waiting হিসেবে দেখা যাবে।  
-৫. ঐচ্ছিক: রোগীর জন্য **সিরিয়াল স্লিপ** প্রিন্ট।
+1. Staff credential দিয়ে sign in (doctor BMDC owner login নয়)।
+2. Mobile দিয়ে patient search → নতুন হলে create (শুধু demographics)।
+3. **Serial**, **fee**, **vitals** দিন।
+4. Doctor **Queue**-তে Waiting।
+5. Optional **serial slip** print।
 
-ফিল্ড টেমপ্লেট: `templates/forms/assistant-serial.form.json`।
+**Panel:** `apps/web-assistant` — assistant/reception foundation; RBAC clinical field বাদ।
 
-### ৩.৩ ডাক্তারের সাথে কিউ (বর্তমান ডেমো)
+Field template: `templates/forms/assistant-serial.form.json`.
 
-নিবেদিত সহকারী পোর্টাল না আসা পর্যন্ত:
+### 3.3 Doctor-এর সাথে Queue (বর্তমান demo)
 
-১. **Queue** খুলুন।  
-২. সিরিয়াল ক্রম ও ভাইটাল নিশ্চিত করুন।  
-৩. ডাক্তার **Prescribe** / **Review** ব্যবহার করেন — সহকারী ওয়ার্কবেঞ্চের ক্লিনিক্যাল প্যানেল খুলবেন না।
+Dedicated assistant portal চালু থাকলে সেটাই ব্যবহার করুন। Interim-এ shared doctor station সাবধানে:
 
-### ৩.৪ গোপনীয়তা নিয়ম (অনতিক্রম্য)
+1. **Queue** খুলুন।
+2. Serial order ও vitals row অনুযায়ী confirm।
+3. Doctor **Prescribe** / **Review** — assistant Workbench clinical panel খুলবে না।
 
-- ক্লিনিক্যাল ডেটা দৃশ্যমান রেখে ফি এডিটের জন্য ওয়ার্কবেঞ্চ খোলা রাখতে বলবেন না — সহকারী সারফেস ব্যবহার করুন।  
-- ক্লিনিক্যাল স্ক্রিন ছবি তুলবেন বা শেয়ার করবেন না।  
-- লগইন অডিট হয় (`assistant.login`)।
+### 3.4 Privacy rules (negotiable নয়)
+
+- Clinical data visible থাকলে fee edit-এর জন্য workbench “খোলা রেখে” দেবেন না — assistant surface ব্যবহার করুন।
+- Clinical screen photograph/share করবেন না।
+- Login audit হয় (`assistant.login` admin audit sample)।
+- **Allergy chart শুধু doctor workbench-এ** — assistant edit করতে পারে না।
 
 ---
 
-## ৪. রোগী
+## 4. Patient
 
-অ্যাকাউন্ট নেই এবং **অ্যাপ ইনস্টল লাগে না**।
+Account নেই, **app install নেই**।
 
-### ৪.১ প্রেসক্রিপশন কীভাবে পাবেন
+### 4.1 Prescription কীভাবে পাবেন
 
-| চ্যানেল | করণীয় |
+| Channel | কী করবেন |
 |---|---|
-| **কাগজের প্যাড** | প্রিন্ট রাখুন; ফার্মেসিতে দেখান |
-| **এসএমএস / হোয়াটসঅ্যাপ** | ফোনের ব্রাউজারে নিরাপদ লিংক খুলুন |
-| **প্যাডের কিউআর** | ক্যামেরা দিয়ে স্ক্যান → একই পেশেন্ট ভিউ |
+| **Paper pad** | Printed Rx রাখুন; pharmacy-তে দেখান |
+| **SMS / WhatsApp** | Phone browser-এ secure link খুলুন |
+| **Pad-এ QR** | Camera দিয়ে scan → same patient view |
 
-### ৪.২ ডিজিটাল আরএক্সে যা দেখবেন
+### 4.2 Digital Rx-এ যা দেখবেন
 
-- ডাক্তার ও চেম্বার পরিচয় (বিএমঅ্যান্ডডিসি)  
-- আপনার নাম / বয়স / লিঙ্গ  
-- ওষুধের তালিকা: ডোজ ও সময়  
-- **বাংলা এবং/অথবা ইংরেজি** নির্দেশনা  
-- ফলো-আপ তারিখ (থাকলে)  
-- ফার্মেসি যাচাইয়ের কিউআর / লিংক  
+- Doctor ও chamber identity (BMDC)
+- Name / age / sex (যেমন record)
+- Medicine list — dose, timing
+- **Bangla এবং/বা English** instruction
+- Follow-up date (থাকলে)
+- Pharmacy verification-এর QR / link
 
-### ৪.৩ টিপস
+### 4.3 Tips
 
-- ডাক্তার বললে আরএক্স **আপডেট** হয়েছে — নতুন লিংক বা রিপ্রিন্ট ব্যবহার করুন; পুরনো কাগজ সুপারসিডেড হতে পারে।  
-- লিংক সার্বজনীনভাবে ফরওয়ার্ড করবেন না; চিকিৎসা নথির মতো রাখুন।  
-- বাংলা নির্দেশনা পছন্দ করুন; সময় (যেমন খাবারের পর) চেম্বার স্টাফকে জিজ্ঞাসা করুন।
+- Doctor বললে Rx **updated**, নতুন link বা reprint — পুরনো paper superseded হতে পারে।
+- Privacy: link publicly forward করবেন না; medical document ধরে নিন।
+- Bangla instruction prefer; timing (যেমন খাওয়ার পর) staff-কে জিজ্ঞাসা করুন।
 
 ---
 
-## ৫. ফার্মাসিস্ট
+## 5. Pharmacist
 
-### ৫.১ ডিসপেন্সের আগে যাচাই
+### 5.1 Dispense-এর আগে verify
 
-১. প্যাড বা রোগীর ফোনের **কিউআর** স্ক্যান করুন।  
-২. নিশ্চিত করুন:  
-   - রোগীর নাম পরিচয়পত্র/অ্যাটেনডেন্টের সাথে মিলে  
-   - প্রেসক্রাইবার বিএমঅ্যান্ডডিসি ও চেম্বার  
-   - স্ট্যাটাস **সর্বশেষ সাইনড ভার্সন** (সুপারসিডেড বাতিল)  
-৩. মেডিকেশন লাইন অনুসারে ডিসপেন্স (জেনেরিক, স্ট্রেংথ, ফর্ম, ডোজ, সময়কাল)।
+1. Pad বা patient phone share screen-এ **QR** scan।
+2. Confirm:
+   - Patient name ID / attendant-এর সাথে মিল
+   - Prescriber BMDC ও chamber
+   - **Latest signed version** (superseded reject)
+3. Medication line অনুযায়ী dispense (generic, strength, form, dose, duration)।
 
-### ৫.২ যাচাই ব্যর্থ হলে *(পরিকল্পিত প্রোডাকশন আচরণ)*
+### 5.2 Verification fail *(planned production)*
 
-- অযাচাইকৃত বা সুপারসিডেড আরএক্সে ডিসপেন্স করবেন না।  
-- রোগীকে চেম্বারে ফিরতে বা নতুন শেয়ার লিংক খুলতে বলুন।
+- Unverifiable বা superseded Rx-এ dispense নয়।
+- Patient chamber-এ ফিরে বা newest share link খুলুক।
 
-ডেমো ভেরিফাই-স্টাইল ইউআরএল:  
+Demo verify-style URL pattern:  
 `https://verify.clinicalos.demo/rx/...`
 
 ---
 
-## ৬. প্ল্যাটফর্ম অ্যাডমিন
+## 6. Platform Admin
 
-ক্লিনিক্যাল ওএস ডিপ্লয়মেন্টের অপস কনসোল (`apps/web-admin`)।
+Clinical OS deployment ops console (`apps/web-admin`)।
 
-### ৬.১ সাইডবার মানচিত্র
+### 6.1 Sidebar map
 
-| পেজ | ব্যবহার |
+| Page | কাজ |
 |---|---|
-| **Dashboard** | সক্রিয় ডাক্তার, আজকের আরএক্স, অফলাইন সিঙ্ক পেন্ডিং, ড্রাগ কেবি আকার |
-| **Doctors** | বিএমঅ্যান্ডডিসি রেজিস্ট্রি, চেম্বার সংখ্যা, প্ল্যান (Free / Pro / Clinic), স্ট্যাটাস |
-| **Chambers** | নাম, লিংকড ডাক্তার, ঠিকানা, সময় |
-| **Drug KB** | ডাক্তার ক্লায়েন্টের ডিজিডিএ ফর্মুলারি সার্চ/কিউরেট |
-| **Audit logs** | `rx.sign`, `rx.amend`, `assistant.login`, অ্যাক্সেস তদন্ত |
-| **Settings** | অর্গ নাম, ডিফল্ট প্যাড ভাষা/কাগজ, এসএমএস/ডব্লিউএ টোকেন, অ্যাকসেন্ট রঙ |
+| **Dashboard** | Active doctors, Rx today, offline sync pending, drug KB size |
+| **Doctors** | BMDC registry, chamber count, plan (Free / Pro / Clinic), status |
+| **Chambers** | Name, linked doctor, address, hours |
+| **Drug KB** | DGDA formulary search/curate doctor client-এর জন্য |
+| **Audit logs** | `rx.sign`, `rx.amend`, `assistant.login`, access |
+| **Settings** | Org name, default pad language/paper, SMS/WhatsApp token, accent color |
 
-### ৬.২ সাধারণ অ্যাডমিন কাজ
+### 6.2 Typical admin tasks
 
-**ডাক্তার অনবোর্ড**
+**Doctor onboard**
 
-১. **Doctors** → নাম, বিএমঅ্যান্ডডিসি, যোগাযোগ, প্ল্যান।  
-২. সেই ডাক্তারের **Chambers** তৈরি (ঠিকানা, সময়, ফি)।  
-৩. ডাক্তার ওটিপি-লগইন ও চেম্বার দেখতে পারেন কিনা নিশ্চিত করুন।
+1. **Doctors** → name, BMDC, contact, plan tier।
+2. **Chambers** create — address, hours, fee schedule।
+3. Doctor OTP-login ও chamber দেখছে কিনা confirm।
 
-**ড্রাগ কেবি আপডেট প্রকাশ**
+**Drug KB update publish**
 
-১. **Drug KB** খুলে ব্র্যান্ড/জেনেরিক/DAR সার্চ।  
-২. বাল্ক রিফ্রেশের জন্য ইনজেস্ট পাইপলাইন (`scripts/import-dgda-medicines.py`) সমন্বয়।  
-৩. ক্লায়েন্টে ভার্সনড অফলাইন প্যাক পুশ *(প্রোডাকশন)*।
+1. **Drug KB** — brand/generic/DAR search।
+2. Bulk refresh: `scripts/import-dgda-medicines.py` pipeline।
+3. Versioned offline pack client-এ push *(production)*।
+4. **TODO(dgda-auto-import):** automated DGDA → Postgres sync ও offline pack refresh (ranking preserve)।
 
-**ঘটনা তদন্ত**
+**Incident investigate**
 
-১. **Audit logs** → ডাক্তার / আরএক্স / সময় ফিল্টার।  
-২. কে সাইন বা সংশোধন করেছে; সহকারী লগইন দেখুন।  
-৩. ক্লিনিক্যাল বিরোধ প্রেসক্রাইবিং ডাক্তারের কাছে তুলুন — অ্যাডমিন হালকাভাবে ক্লিনিক্যাল কন্টেন্ট বদলাবেন না।
+1. **Audit logs** → doctor / Rx / time filter।
+2. কে sign/amend; assistant login check।
+3. Clinical dispute prescribing doctor-এ escalate — admin casually clinical content বদলায় না।
 
-**রোগী মেসেজিং কনফিগ**
+**Patient messaging configure**
 
-১. **Settings** → এসএমএস / হোয়াটসঅ্যাপ বিজনেস টোকেন।  
-২. ডিফল্ট প্যাড ভাষা (ইং/বাং) ও কাগজ (এ৫/এ৪)।  
-৩. ব্র্যান্ডিং অ্যাকসেন্ট চেম্বার প্যাডের সাথে মিল রাখুন (ডিফল্ট `#0b5f4b`)।
+1. **Settings** → SMS / WhatsApp Business token।
+2. Default pad language (EN/BN), paper (A5/A4)।
+3. Branding accent chamber pad-এর সাথে (`#0b5f4b` default)।
 
 ---
 
-## ৭. প্রিন্ট টেমপ্লেট ও প্রিভিউ
+## 7. Print templates & previews
 
-লাইভ ভিজিট ছাড়া প্যাড ডিজাইন / কিউএ:
+লাইভ visit ছাড়া pad design / QA:
 
 ```powershell
 cd F:\prescription\templates
 python -m http.server 8765
 ```
 
-খুলুন `http://localhost:8765/preview/` → টেমপ্লেট, এ৪/এ৫, ইং/বাং বদলান → Print / PDF।
+`http://localhost:8765/preview/` → template, A4/A5, EN/BN → Print / PDF।
 
-| ফর্ম / প্রিন্ট পরিবার | কখন ব্যবহার |
+| Form / print family | কখন |
 |---|---|
-| জেনারেল | সাধারণ প্রাপ্তবয়স্ক ভিজিট |
-| পেডিয়াট্রিক | ওজন-সংবেদনশীল পেডস প্যাড |
-| ক্রনিক | দীর্ঘমেয়াদি মেডস / রি-আরএক্স স্টাইল |
-| সহকারী সিরিয়াল | শুধু ফ্রন্ট-ডেস্ক স্লিপ |
-| পেশেন্ট শেয়ার | ফোন-বান্ধব আর্টিফ্যাক্ট |
-| ফার্মেসি ভেরিফাই | ডিসপেন্স নিশ্চয়তা সারফেস |
+| General | Standard adult visit |
+| Pediatric | Weight-sensitive peds pad |
+| Chronic | Long-term meds / re-Rx style |
+| Assistant serial | Front-desk slip only |
+| Patient share | Phone-friendly artifact |
+| Pharmacy verify | Dispense confirmation surface |
 
-রোল প্যানেল `apps/web-*`; ডাক্তার UI `app-templates/frontend/clinical-os-doctor`।
+Role panel: `apps/web-*`; doctor UI: `app-templates/frontend/clinical-os-doctor`.
 
 ---
 
-## ৮. ডেস্কটপ অ্যাপ
+## 8. Desktop app
 
-ডাক্তার ইউআই মোড়ানো ইলেকট্রন ক্লায়েন্ট।
+Electron client doctor UI wrap করে।
 
-| প্রয়োজন | কীভাবে |
+| Need | How |
 |---|---|
-| ডেভ রান | `apps/desktop` → `npm run dev` |
-| উইন্ডোজ ইনস্টলার | `npm run dist:win` |
-| নেটিভ প্রিন্ট | File → Print / ওয়ার্কবেঞ্চ Sign & print |
-| পেজ জাম্প | মেনু **Navigate**: Sign in, Workbench, Patients, Queue |
-| ইউজার ডেটা ফোল্ডার | Help → Open user data folder |
-| পরে রিমোট ওয়েব ইউআই | `$env:CLINICAL_OS_URL="http://localhost:3000"` |
+| Dev run | `apps/desktop` → `npm run dev` |
+| Windows installer | `npm run dist:win` |
+| Native print | File → Print / workbench Sign & print |
+| Jump pages | Menu **Navigate**: Sign in, Workbench, Patients, Queue |
+| User data folder | Help → Open user data folder |
+| Remote web UI later | `$env:CLINICAL_OS_URL="http://localhost:3000"` |
 
-বুটে তৈরি লোকাল ফোল্ডার:  
+Boot-এ তৈরি local folder:  
 `%APPDATA%/clinical-os-desktop/clinical-os/{db,cache,outbox}`
 
 ---
 
-## ৯. কীবোর্ড চিট শিট
+## 9. Keyboard cheat sheet
 
-| শর্টকাট | প্রসঙ্গ | কাজ |
+| Shortcut | Context | Action |
 |---|---|---|
-| `/` | ডাক্তার অ্যাপ (ইনপুটে নয়) | গ্লোবাল সার্চ ফোকাস (ওয়ার্কবেঞ্চে ড্রাগ, রেজিস্ট্রিতে পেশেন্ট) |
-| `Ctrl/Cmd+K` | ডাক্তার অ্যাপ | **Patients** এ যান |
-| `Ctrl+Enter` | ওয়ার্কবেঞ্চ | **Sign & print** |
-| `Esc` | ওয়ার্কবেঞ্চ ড্রাগ সার্চ | সার্চ মুছুন |
-| `Enter` | লগইন ওটিপি | সাবমিট |
-| `Ctrl+0…3` | ডেস্কটপ Navigate মেনু | Sign in / Workbench / Patients / Queue *(ইলেকট্রন)* |
+| `/` | Doctor app (input-এ না) | Global search focus (Workbench drug, registry patient) |
+| `Ctrl/Cmd+K` | Doctor app | **Patients** |
+| `Ctrl+Enter` | Workbench | **Sign & print** |
+| `Esc` | Workbench drug search | Search clear |
+| `Enter` | Login OTP | Submit |
+| `Ctrl+0…3` | Desktop menu Navigate | Sign in / Workbench / Patients / Queue *(Electron)* |
 
 ---
 
-## ১০. সমস্যা সমাধান
+## 10. Troubleshooting
 
-| সমস্যা | চেষ্টা করুন |
+| Problem | What to try |
 |---|---|
-| অবৈধ ওটিপি | ডেমো কোড **`123456`** ব্যবহার করুন |
-| খালি / অদ্ভুত পেশেন্ট | Patients বা Login এ **Reset demo data** |
-| ড্রাগ সার্চ খালি | `dgda-drugs.js` লোড অপেক্ষা; সিস্টেম ফিল্টার দেখুন; প্যাক না থাকলে `python scripts/import-dgda-medicines.py` |
-| রি-প্রেসক্রাইব কাজ করে না | সেই রোগীর পূর্ব **সাইনড** আরএক্স লাগে |
-| প্রিন্ট ভুল দেখায় | এ৫ বনাম এ৪ ও লোকেল ইং/বাং দেখুন; `templates/preview` ব্যবহার করুন |
-| সিঙ্ক Offline আটকে | বর্তমান স্টাবে স্বাভাবিক — লোকাল প্রেসক্রাইব চলে; প্রোডাকশনে আউটবক্স খালি হবে |
-| সহকারী মেডস দেখতে পাচ্ছেন | হওয়া উচিত নয় — শুধু assistant-serial / পোর্টাল; আরব্যাক বাগ হিসেবে রিপোর্ট |
-| রোগীর লিংক খোলে না | চেম্বারকে পুনরায় শেয়ার পাঠাতে বলুন; ডেটা আছে কিনা দেখুন; ফলব্যাক কাগজের প্যাড |
+| Invalid OTP | Demo code **`123456`** |
+| Empty / weird patients | **Reset demo data** (Patients বা Login) |
+| Drug search ফাঁকা | `dgda-drugs.js` load হতে দিন; Allopathic/system filter; pack missing হলে `python scripts/import-dgda-medicines.py` |
+| Re-prescribe কাজ করে না | ওই patient-এ prior **signed** Rx লাগে |
+| Print ভুল দেখায় | A5 vs A4, locale EN/BN; `templates/preview` |
+| Sync Offline আটকে | Stub-এ expected — local prescribe চলে; production outbox drain |
+| Assistant meds দেখে | হওয়া উচিত নয় — assistant-serial form / `web-assistant` only; RBAC bug report |
+| Assistant allergy edit | **Forbidden by design** — doctor workbench-এ allergy chart |
+| Patient link খুলে না | Chamber resend share; phone data; paper pad fallback |
 
 ---
 
-## দ্রুত ভূমিকা কার্ড
+## Quick role cards
 
-**ডাক্তার** — কিউ → ওয়ার্কবেঞ্চ → ড্রাগ সার্চ → সিডিএসএস → Sign & print / Share।  
-**সহকারী** — রোগী খুঁজুন → সিরিয়াল + ফি + ভাইটাল → সিরিয়াল স্লিপ। পূর্ণ চার্ট কখনো নয়।  
-**রোগী** — এসএমএস/ডব্লিউএ/কিউআর বা কাগজ; বাংলা নির্দেশনা মানুন; ফার্মেসিতে দেখান।  
-**ফার্মাসিস্ট** — কিউআর স্ক্যান → সর্বশেষ ভার্সন নিশ্চিত → ডিসপেন্স।  
-**অ্যাডমিন** — ডাক্তার ও চেম্বার → ড্রাগ কেবি → অডিট → মেসেজিং সেটিংস।
+**Doctor** — Queue → Workbench → drug search → CDSS → Sign & print / Share; allergy chart workbench-এ maintain।  
+**Assistant** — Patient খুঁজুন → serial + fee + vitals → serial slip। Full chart / allergy edit নয় (`web-assistant`)।  
+**Patient** — SMS/WA/QR বা paper; Bangla instruction follow; pharmacy-তে দেখান।  
+**Pharmacist** — QR scan → latest version confirm → dispense।  
+**Admin** — Doctors & chambers → Drug KB → Audit → messaging settings.
 
 ---
 
-## সম্পর্কিত নথি
+## Related docs
 
-| নথি | উদ্দেশ্য |
+| Doc | Purpose |
 |---|---|
-| `WORKFLOW.md` | পূর্ণ ক্লিনিক্যাল/অপস ওয়ার্কফ্লো |
-| `DEVELOPMENT_PLAN.md` | প্রোডাক্ট ও ইঞ্জিনিয়ারিং এসডিপি |
-| মূল `README.md` | রিপো ওভারভিউ |
-| ডেস্কটপ README | ডেস্কটপ ডেভেলপমেন্ট |
-| ডাক্তার ইউআই README | ডাক্তার ইউআই প্রযুক্তি নোট |
+| [`WORKFLOW.md`](./WORKFLOW.md) | Full clinical/ops workflow |
+| [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) | Product & engineering SDP |
+| [`DEVELOPER.md`](./DEVELOPER.md) | Developer handbook |
+| [`../README.md`](../README.md) | Repo overview |
+| [`../apps/desktop/README.md`](../apps/desktop/README.md) | Desktop development |
+| [`../app-templates/frontend/clinical-os-doctor/README.md`](../app-templates/frontend/clinical-os-doctor/README.md) | Doctor UI technical notes |

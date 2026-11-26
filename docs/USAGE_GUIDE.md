@@ -1,4 +1,4 @@
-# Clinical OS (BD) — Usage Guide
+﻿# Clinical OS (BD) — Usage Guide
 
 **Tagline:** One Doctor. One Patient Record. Every Chamber.  
 **For:** Doctors, receptionists/assistants, patients, pharmacists, and platform admins  
@@ -60,9 +60,9 @@ $env:CLINICAL_OS_ENTRY="login"; npm run start
 ### 1.3 First sign-in (doctor demo)
 
 1. Open **Sign in**.
-2. Enter mobile number (pre-filled in demo) and BM&DC-related fields as shown.
+2. Enter mobile number (pre-filled in demo) and BMDC-related fields as shown.
 3. Enter OTP **`123456`** → continue.
-4. You land in the chamber session with demo doctor **Dr. Ayesha Rahman** (BM&DC A-54321) and active chamber **Green Life Chamber**.
+4. You land in the chamber session with demo doctor **Dr. Ayesha Rahman** (BMDC A-54321) and active chamber **Green Life Chamber**.
 
 Assistive-software notice on login: final prescribing authority remains with the registered medical practitioner.
 
@@ -88,7 +88,7 @@ Header (always available after login):
 | **Workbench** | Single-screen Rx composer |
 | **Patients** | Master patient registry |
 | **Queue** | Today’s serial list + vitals |
-| Chamber pill | Active chamber name + your BM&DC |
+| Chamber pill | Active chamber name + your BMDC |
 | Sync chip | Online · synced / Offline |
 | **Sign out** | Back to login |
 
@@ -121,7 +121,7 @@ Layout (one screen):
 | Medications | Search DGDA formulary → add lines (dose, freq, days, instructions) |
 | Prior prescriptions | Review history; load a prior Rx |
 | Sign & issue | Sign & print · Share · Re-prescribe last |
-| Prescriber | Your name, BM&DC, active chamber address |
+| Prescriber | Your name, BMDC, active chamber address |
 
 **Add a drug**
 
@@ -129,7 +129,8 @@ Layout (one screen):
 2. Type brand, generic, or DAR.
 3. Optionally filter system: Allopathic (default), Ayurvedic, Herbal, Homeopathic, Unani, All.
 4. Select a product → fill dose / frequency / duration / instructions.
-5. Watch for **allergy / penicillin-class** (and similar) banners — override only when clinically justified *(overrides logged in production)*.
+5. Confirm / update the **allergy** banner yourself if reception missed anything — assistants cannot edit the allergy chart.
+6. Watch for **allergy / penicillin-class** (and similar) CDSS banners — override only when clinically justified *(overrides logged in production)*.
 
 **Re-prescribe**
 
@@ -163,7 +164,7 @@ Layout (one screen):
 
 ### 2.7 Safety & compliance (doctor obligations)
 
-- Treat CDSS as **assistance**, not autonomous prescribing (BM&DC).
+- Treat CDSS as **assistance**, not autonomous prescribing (BMDC).
 - Confirm allergies and pregnancy/lactation status verbally when uncertain.
 - Prefer generic + strength clarity on the pad.
 - When amending a signed Rx, expect a **new version**; tell the patient/pharmacy the previous print may be superseded *(Phase 2 verify)*.
@@ -174,6 +175,8 @@ Layout (one screen):
 
 Staff role for front desk. **No access to diagnosis, medications, advice, or allergy chart.**
 
+If the assistant skips or cannot record something clinical (including **allergies**), the **doctor must enter or correct it on the workbench** before prescribing. Allergy chart ownership stays with the BMDC-registered doctor — never the assistant.
+
 ### 3.1 What you can do
 
 | Task | Allowed |
@@ -183,11 +186,11 @@ Staff role for front desk. **No access to diagnosis, medications, advice, or all
 | Record fee | Yes |
 | Capture vitals (BP, pulse, …) | Yes |
 | Print serial slip | Yes |
-| View diagnosis / meds / allergies / clinical notes | **No** |
+| View / edit diagnosis / meds / allergies / clinical notes | **No** (doctor only on workbench) |
 
 ### 3.2 Check-in steps *(product design; assistant UI portal planned)*
 
-1. Sign in with staff credentials (not the doctor BM&DC owner login).
+1. Sign in with staff credentials (not the doctor BMDC owner login).
 2. Search patient by mobile → create if new (demographics only).
 3. Enter **serial**, **fee**, **vitals**.
 4. Patient appears on doctor **Queue** as Waiting.
@@ -225,7 +228,7 @@ No account and **no app install**.
 
 ### 4.2 What you see on the digital Rx
 
-- Doctor and chamber identity (BM&DC)
+- Doctor and chamber identity (BMDC)
 - Your name / age / sex (as recorded)
 - Medicine list with dose and timing
 - Instructions in **Bangla and/or English**
@@ -247,7 +250,7 @@ No account and **no app install**.
 1. Scan the **QR** on the pad or patient phone share screen.
 2. Confirm:
    - Patient name matches ID / attendant
-   - Prescriber BM&DC and chamber
+   - Prescriber BMDC and chamber
    - Status is **latest signed version** (reject superseded)
 3. Dispense against medication lines (generic, strength, form, dose, duration).
 
@@ -270,7 +273,7 @@ Ops console for Clinical OS deployments (`apps/web-admin`).
 | Page | Use it to… |
 |---|---|
 | **Dashboard** | Monitor active doctors, Rx today, offline sync pending, drug KB size |
-| **Doctors** | BM&DC registry, chambers count, plan (Free / Pro / Clinic), status |
+| **Doctors** | BMDC registry, chambers count, plan (Free / Pro / Clinic), status |
 | **Chambers** | Names, linked doctor, address, hours |
 | **Drug KB** | Search/curate DGDA formulary used by doctor clients |
 | **Audit logs** | Investigate `rx.sign`, `rx.amend`, `assistant.login`, access |
@@ -280,7 +283,7 @@ Ops console for Clinical OS deployments (`apps/web-admin`).
 
 **Onboard a doctor**
 
-1. **Doctors** → add name, BM&DC, contact, plan tier.
+1. **Doctors** → add name, BMDC, contact, plan tier.
 2. Create **Chambers** linked to that doctor (address, hours, fee schedule).
 3. Confirm doctor can OTP-login and see chambers.
 

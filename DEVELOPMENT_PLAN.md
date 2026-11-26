@@ -1,4 +1,4 @@
-# Unified Clinical Practice Platform — Full Development Plan
+﻿# Unified Clinical Practice Platform — Full Development Plan
 
 **Product working name:** Clinical OS (BD)  
 **Tagline:** One Doctor. One Patient Record. Every Chamber.  
@@ -24,7 +24,7 @@ Build a **Unified Clinical Practice Platform** for Bangladesh—not another pres
 | Slow manual typing / mouse-heavy UI | Single-screen keyboard-first Rx workbench; 1-click re-Rx; specialty templates |
 | Dirty drug DB (duplicates, withdrawn brands) | DGHS-certified normalized formulary (~39,196 products) |
 | No clinical context (age/weight/pregnancy/renal) | Context-aware prescribing + CDSS |
-| Weak / fatiguing DDI alerts | Evidence-based, severity-ranked, BM&DC-compliant CDSS |
+| Weak / fatiguing DDI alerts | Evidence-based, severity-ranked, BMDC-compliant CDSS |
 | No Rx version control | Immutable Rx versions + audit trail |
 | Cloud dies on load-shedding; offline silos | Offline-first local DB + background sync + local print |
 | Multi-chamber chaos | One doctor account → many chambers (pads, fees, serials, staff) |
@@ -35,7 +35,7 @@ Build a **Unified Clinical Practice Platform** for Bangladesh—not another pres
 | Patients forced to install apps | SMS / WhatsApp / QR — no install |
 | No follow-up | Follow-up dates, adherence nudges, chronic care timelines |
 | Vendor lock-in | One-click export (FHIR + PDF backup) |
-| No DGHS FHIR / BM&DC telemed compliance | Design to Core FHIR; doctor-controlled AI; no illegal AI prescribing |
+| No DGHS FHIR / BMDC telemed compliance | Design to Core FHIR; doctor-controlled AI; no illegal AI prescribing |
 
 ---
 
@@ -49,7 +49,7 @@ A clinical operating system for Bangladeshi private practice: prescribe in <60 s
 - Inpatient ward management
 - Insurance claims adjudication (later)
 - Consumer wellness / fitness app
-- Autonomous AI prescribing (forbidden under BM&DC)
+- Autonomous AI prescribing (forbidden under BMDC)
 
 ---
 
@@ -62,7 +62,7 @@ A clinical operating system for Bangladeshi private practice: prescribe in <60 s
 5. **Pharmacist** — verify authenticity / latest version  
 6. **Lab partner (later)** — push digital reports into chart  
 
-**ICP (Ideal Customer Profile):** BM&DC-registered doctors in urban/semi-urban chambers seeing ≥15 patients/day, practicing at ≥2 locations, currently on paper or switching from a printer-only tool.
+**ICP (Ideal Customer Profile):** BMDC-registered doctors in urban/semi-urban chambers seeing ≥15 patients/day, practicing at ≥2 locations, currently on paper or switching from a printer-only tool.
 
 ---
 
@@ -119,7 +119,7 @@ A clinical operating system for Bangladeshi private practice: prescribe in <60 s
 - Age/weight-based pediatric dosing helpers
 - Pregnancy / lactation / renal / hepatic caution flags
 - Always doctor-overridable; logged overrides
-- BM&DC-aligned: assistive, never autonomous prescribe
+- BMDC-aligned: assistive, never autonomous prescribe
 
 ### P6. Multi-Chamber + RBAC
 - Chambers: address, pad header, fee schedule, hours
@@ -155,7 +155,7 @@ A clinical operating system for Bangladeshi private practice: prescribe in <60 s
                 │                  │
                 ▼                  ▼
 ┌────────────────────┐    ┌──────────────────────────────┐
-│ Sync / API Gateway │───▶│ Auth (OTP + BM&DC verify)    │
+│ Sync / API Gateway │───▶│ Auth (OTP + BMDC verify)    │
 └─────────┬──────────┘    │ RBAC │ Audit │ Rate limits   │
           │               └──────────────────────────────┘
           ▼
@@ -177,7 +177,7 @@ A clinical operating system for Bangladeshi private practice: prescribe in <60 s
 | Backend | NestJS or FastAPI | Clear modules, typed APIs |
 | Primary DB | PostgreSQL | Relational clinical data + JSONB |
 | Jobs | Redis + BullMQ / Celery | SMS, sync, exports |
-| Auth | Phone OTP + optional email; BM&DC license verify | Doctor trust |
+| Auth | Phone OTP + optional email; BMDC license verify | Doctor trust |
 | Print | Browser print CSS + PDF generation | Chamber printers |
 | Notify | SMS gateway (local) + WhatsApp Business API | Patient reach |
 | Hosting | BD-friendly cloud or regional (AWS ap-south / DO / local VPS) | Latency + cost |
@@ -203,7 +203,7 @@ A clinical operating system for Bangladeshi private practice: prescribe in <60 s
 
 ## 8. Domain Model (Core Entities)
 
-- **User** (doctor, staff) — roles, BM&DC license, chambers  
+- **User** (doctor, staff) — roles, BMDC license, chambers  
 - **Chamber** — branding/pad, fees, location  
 - **Patient** — demographics, phones, master ID  
 - **Encounter / Visit** — chamber, serial, vitals, chief complaint  
@@ -225,7 +225,7 @@ FHIR mapping targets: `Patient`, `Practitioner`, `Organization` (chamber), `Enco
 ### Phase 0 — Foundations (Weeks 1–3)
 - [x] Repo layout + developer handbook + doc sync
 - [x] Base DB schema + migrations (PostgreSQL + Prisma)
-- [x] Auth shell (JWT + demo OTP); BM&DC field on User
+- [x] Auth shell (JWT + demo OTP); BMDC field on User
 - [x] Multi-role RBAC + admin / assistant / patient / pharmacy panels
 - [x] Drug KB in Postgres + Super Admin search ranking
 - [x] Docker Compose + Nginx scale profile + k6 harness
@@ -270,7 +270,7 @@ Must-have:
 - Chamber billing / fee settlement reports
 - Partner APIs (diagnostics chains)
 - Performance hardening; regional failover
-- BM&DC telemedicine-ready video consult hook (optional, compliant)
+- BMDC telemedicine-ready video consult hook (optional, compliant)
 
 ### Phase 4 — National Alignment (Months 9–14)
 - Full DGHS Core FHIR interoperability pack
@@ -330,7 +330,7 @@ Must-have:
 - Every alert: evidence note + severity + override reason required for high severity  
 - Clinical advisory board (3–5 practicing BD physicians) to review rules  
 - No generative AI writing final Rx without doctor confirmation  
-- Document BM&DC compliance position in product + marketing  
+- Document BMDC compliance position in product + marketing  
 
 ---
 
@@ -342,7 +342,7 @@ Must-have:
 4. **Offline is default, not an edge case**  
 5. **Assistants never see what they don’t need**  
 6. **Patients never forced to install**  
-7. **Print must look like a trusted pad** (header, BM&DC no., signature block)  
+7. **Print must look like a trusted pad** (header, BMDC no., signature block)  
 
 Usability test weekly during Phase 1 with real doctors on real hardware (low-end laptops, 1366×768, weak Wi-Fi).
 
@@ -401,7 +401,7 @@ Engineering must meter: chambers, staff seats, SMS volume, storage.
 | WhatsApp API / SMS cost | Medium | QR-first; SMS fallback; metered plans |
 | Doctors resist workflow change | High | Import from paper habits; 1-click re-Rx; onboarding in chamber |
 | Competitor price war | Medium | Compete on speed/EHR/offline/safety, not cheapest |
-| Regulatory / BM&DC AI rules | High | Doctor-in-loop only; legal review |
+| Regulatory / BMDC AI rules | High | Doctor-in-loop only; legal review |
 | PHI breach | Critical | Encryption, RBAC, pen-test before scale |
 | Load-shedding + old PCs | High | Lightweight PWA; local-first; low RAM profile |
 
@@ -409,7 +409,7 @@ Engineering must meter: chambers, staff seats, SMS volume, storage.
 
 ## 18. Compliance Checklist
 
-- [ ] BM&DC doctor verification at signup  
+- [ ] BMDC doctor verification at signup  
 - [ ] Telemedicine guideline adherence (if video added)  
 - [ ] No unlawful AI autonomous prescribing claims  
 - [ ] DGHS FHIR alignment roadmap documented  
@@ -452,6 +452,7 @@ Engineering must meter: chambers, staff seats, SMS volume, storage.
 - Auth + chamber + patient APIs
 - Print template v1
 - **TODO(dgda-auto-import):** Automated DGDA → Postgres `medicines` sync (detect new drugs, upsert, refresh offline pack; preserve Super Admin ranking)
+- **TODO(medicine-cache-by-discipline):** Medicine favorites/recents/cache scoped **per doctor** and by **clinical discipline** (not one global cache for all doctors)
 
 ### Days 31–60
 - End-to-end prescribe online
@@ -486,7 +487,7 @@ Engineering must meter: chambers, staff seats, SMS volume, storage.
 2. Hire/assign full-stack lead + clinical data owner  
 3. Start drug KB pipeline and Rx editor prototype in parallel  
 4. Recruit 10 design-partner doctors this month  
-5. Draft privacy/ToS and BM&DC compliance note  
+5. Draft privacy/ToS and BMDC compliance note  
 6. Set up repo, CI, staging, error tracking  
 
 ---

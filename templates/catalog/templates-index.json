@@ -4,7 +4,7 @@
   "standardsBasis": [
     "WHO Guide to Good Prescribing / Model Formulary prescription elements",
     "HL7 FHIR MedicationRequest / Patient / Practitioner / Dosage concepts",
-    "Bangladesh chamber practice: A5 primary, A4 optional, BM&DC reg., Bangla+English"
+    "Bangladesh chamber practice: A5 primary, A4 optional, BMDC reg., Bangla+English"
   ],
   "paperSizes": ["a5", "a4"],
   "locales": ["en", "bn"],
