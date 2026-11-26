@@ -5,6 +5,10 @@ import * as path from "node:path";
 
 const prisma = new PrismaClient();
 
+// TODO(dgda-auto-import): Automate ingest of newly published DGDA drugs into the
+// `medicines` table (scheduled job / admin trigger). Today this seed only copies a
+// one-time subset from dgda-drugs.js via MEDICINE_SEED_LIMIT — it does not watch DGDA.
+
 type DgdaRow = (string | number | null)[];
 
 function loadDgdaSubset(limit: number): Array<{
@@ -22,7 +26,7 @@ function loadDgdaSubset(limit: number): Array<{
   const candidates = [
     // Local monorepo (seed run from apps/api)
     path.resolve(process.cwd(), "../../app-templates/frontend/clinical-os-doctor/data/dgda-drugs.js"),
-    // Docker mount under /app
+    // Optional container layout (Docker is not required)
     path.resolve(process.cwd(), "app-templates/frontend/clinical-os-doctor/data/dgda-drugs.js"),
     path.resolve(__dirname, "../../app-templates/frontend/clinical-os-doctor/data/dgda-drugs.js"),
     path.resolve(__dirname, "../../../app-templates/frontend/clinical-os-doctor/data/dgda-drugs.js"),

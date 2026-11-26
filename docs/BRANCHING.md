@@ -16,7 +16,7 @@ Promotion flow: `main` → `stage` → `production`.
 
 ## Panel slices (`panel/*`)
 
-Thin, independently runnable trees. Each keeps the **shared platform** (Compose, `infra/`, `apps/api/`, DGDA seed data path) plus one role surface.
+Thin, independently runnable trees. Each keeps the **shared platform** (`apps/api/`, `infra/` helpers, DGDA seed data path) plus one role surface. Use **native local PostgreSQL** (see [`LOCAL_SETUP.md`](./LOCAL_SETUP.md)); Docker is not required.
 
 | Branch | Surface | Dev port |
 |---|---|---|
@@ -32,7 +32,7 @@ Thin, independently runnable trees. Each keeps the **shared platform** (Compose,
 git clone -b panel/pharmacy https://github.com/Zis-an/prescription-software.git
 cd prescription-software
 cp .env.example .env
-docker compose up -d postgres redis
+# create DB once: powershell -File scripts/setup-local-db.ps1  (see LOCAL_SETUP.md)
 cd apps/api && npm install && npx prisma migrate deploy && npx prisma db seed && npm run start:dev
 # other terminal
 cd apps/web-pharmacy && npm install && npm run dev
@@ -63,7 +63,7 @@ Checkout a tag to freeze the tree at a demo milestone on the `main` history:
 git fetch --tags
 git checkout demo/form-save
 cp .env.example .env
-docker compose up -d postgres redis
+# native Postgres must already be running (LOCAL_SETUP.md)
 cd apps/api && npm install && npx prisma migrate deploy && npx prisma db seed && npm run start:dev
 ```
 

@@ -2,13 +2,22 @@
 
 NestJS + Prisma + PostgreSQL. JWT RBAC, medicines search ranking (Super Admin), multi-role endpoints.
 
-## Local (Postgres via Docker)
+**Runtime default:** native local PostgreSQL. Docker is optional and not required.
+
+## Local (native Postgres)
+
+1. Install PostgreSQL and create the DB (see [`docs/LOCAL_SETUP.md`](../../docs/LOCAL_SETUP.md)):
+
+```powershell
+# after PostgreSQL is installed and psql is on PATH
+$env:PGPASSWORD = '<postgres-superuser-password>'
+powershell -File ../../scripts/setup-local-db.ps1
+```
+
+2. From repo root:
 
 ```bash
-# from repo root
 cp .env.example .env
-docker compose up -d postgres redis
-
 cd apps/api
 npm install
 npx prisma migrate deploy
@@ -18,6 +27,8 @@ npm run start:dev
 
 API: http://localhost:3001  
 Health: http://localhost:3001/health
+
+Redis is **not** required to start the API today.
 
 ## Seeded accounts
 
@@ -36,3 +47,5 @@ Demo Rx: `GET /prescriptions/share/demo-share-karim` · verify `GET /prescriptio
 
 Search order: `boost_score DESC`, `search_rank ASC`, `brand ASC`.  
 Super Admin only: `PATCH /medicines/:id/ranking`, `PATCH /medicines/ranking/bulk`.
+
+<!-- TODO(dgda-auto-import): Automated DGDA formulary sync into medicines (see seed.ts / import-dgda-medicines.py). -->

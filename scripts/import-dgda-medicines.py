@@ -7,7 +7,13 @@ Source (default):
 
 Outputs:
   - app-templates/frontend/clinical-os-doctor/data/dgda-drugs.js
-    (doctor workbench + admin Drug KB; packaged with desktop ui/doctor)
+    (doctor workbench + offline formulary; seed may copy a subset into Postgres)
+
+TODO(dgda-auto-import): Extend this pipeline (or a Nest job) to:
+  1) detect newly published DGDA rows,
+  2) upsert into PostgreSQL `medicines`,
+  3) refresh the offline dgda-drugs.js pack,
+  without requiring developers to re-run seed manually.
 """
 
 from __future__ import annotations

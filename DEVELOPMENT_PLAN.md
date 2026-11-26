@@ -451,6 +451,7 @@ Engineering must meter: chambers, staff seats, SMS volume, storage.
 - DGHS drug ingest pipeline v0
 - Auth + chamber + patient APIs
 - Print template v1
+- **TODO(dgda-auto-import):** Automated DGDA → Postgres `medicines` sync (detect new drugs, upsert, refresh offline pack; preserve Super Admin ranking)
 
 ### Days 31–60
 - End-to-end prescribe online

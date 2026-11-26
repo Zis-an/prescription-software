@@ -11,7 +11,9 @@
 | Concurrent sessions (peak) | 2–5% of registered ≈ 4,000–10,000 |
 | Peak RPS (API) | Medicine search + queue polls dominate; design for **1,000–3,000 RPS** behind LB |
 | Medicine catalog | Up to ~50k DGDA rows in PostgreSQL with ranking indexes |
-| Data store | **PostgreSQL 16** primary; Redis for cache/jobs (stubbed in Compose) |
+| Data store | **PostgreSQL** primary (native local by default); Redis optional for cache/jobs later |
+
+Day-to-day development does **not** use Docker. Compose files below are an **optional** scale lab only.
 
 ## Topology
 
@@ -19,7 +21,7 @@
 Clients (admin / doctor / assistant / patient / pharmacy)
         │
         ▼
-   Nginx (least_conn)  ← docker-compose.scale.yml
+   Nginx (least_conn)  ← optional docker-compose.scale.yml
         │
    ┌────┴────┐
    api1     api2     …N NestJS replicas (stateless JWT)
@@ -27,17 +29,18 @@ Clients (admin / doctor / assistant / patient / pharmacy)
         ▼
    PostgreSQL (+ optional PgBouncer)
         │
-   Redis (sessions/jobs/cache — Phase 1+)
+   Redis (sessions/jobs/cache — Phase 1+; optional)
 ```
 
-### Run single API
+### Run single API (default — no Docker)
 
 ```bash
-docker compose up --build -d
-# API via :3001 or Nginx :8080
+# native Postgres + LOCAL_SETUP.md
+cd apps/api && npm run start:dev
+# API :3001
 ```
 
-### Run 2 API replicas + LB
+### Optional: 2 API replicas + LB (Compose lab)
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.scale.yml up --build -d

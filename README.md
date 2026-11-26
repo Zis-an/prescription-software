@@ -24,8 +24,6 @@ Full branching guide: [`docs/BRANCHING.md`](docs/BRANCHING.md)
 ```
 prescription/
 ├── DEVELOPMENT_PLAN.md          # Full product & engineering plan
-├── docker-compose.yml           # Postgres + Redis + API + Nginx
-├── docker-compose.scale.yml     # 2× API replicas behind Nginx
 ├── apps/
 │   ├── api/                     # NestJS + Prisma + PostgreSQL API
 │   ├── desktop/                 # Electron doctor shell
@@ -33,34 +31,39 @@ prescription/
 │   ├── web-assistant/           # Assistant queue panel
 │   ├── web-patient/             # Patient Rx share view
 │   └── web-pharmacy/            # Pharmacy verify panel
-├── app-templates/               # UI kits & doctor HTML prototype
+├── app-templates/               # Doctor HTML prototype + DGDA pack
 ├── templates/                   # Rx print/PDF pads + schemas
 ├── loadtest/                    # k6 smoke + search burst
-└── docs/                        # Developer / workflow / scale guides
+├── docker-compose*.yml          # Optional later (not required)
+└── docs/                        # Developer / workflow / local setup
 ```
 
-## Quick start — API + PostgreSQL
+## Quick start — local PostgreSQL (no Docker)
 
-Requires **Docker Desktop** and Node.js 20+.
+Requires **PostgreSQL** (native install) and **Node.js 20+**.
+
+1. Install Postgres and create the app DB — see [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md).
+
+```powershell
+# after psql is on PATH
+$env:PGPASSWORD = '<postgres-superuser-password>'
+powershell -File scripts/setup-local-db.ps1
+```
+
+2. Run the API:
 
 ```bash
 cp .env.example .env
-docker compose up --build -d
-
-# API:     http://localhost:3001
-# via LB:  http://localhost:8080
-```
-
-Local API against Compose Postgres only:
-
-```bash
-docker compose up -d postgres redis
 cd apps/api
 npm install
 npx prisma migrate deploy
 npx prisma db seed
 npm run start:dev
 ```
+
+API: http://localhost:3001 · Health: http://localhost:3001/health
+
+Redis is **optional** and not required to start the API today.
 
 ### Seeded logins
 
@@ -86,14 +89,9 @@ cd apps/web-pharmacy && npm install && npm run dev   # :5176
 
 Super Admin controls **medicine search order** (`boost_score` / `search_rank`) on the Drug KB page.
 
-### Scale (2 API replicas)
+### Optional Docker / scale
 
-```bash
-docker compose -f docker-compose.yml -f docker-compose.scale.yml up --build -d
-k6 run -e BASE_URL=http://localhost:8080 loadtest/k6-search-burst.js
-```
-
-See [`docs/SCALE.md`](docs/SCALE.md).
+Compose files are kept for a future optional stack. Day-to-day development does **not** use Docker. Scale notes: [`docs/SCALE.md`](docs/SCALE.md).
 
 ## Desktop (doctor workbench)
 
@@ -111,8 +109,10 @@ Details: [`apps/desktop/README.md`](apps/desktop/README.md)
 
 | Doc | Purpose |
 |---|---|
+| [`docs/LOCAL_SETUP.md`](docs/LOCAL_SETUP.md) | Native Postgres setup (no Docker) |
 | [`docs/DEVELOPER.md`](docs/DEVELOPER.md) | **Developer handbook** — architecture, modules, DB, tech |
-| [`docs/SCALE.md`](docs/SCALE.md) | 200k-user load-balance readiness |
+| [`docs/BRANCHING.md`](docs/BRANCHING.md) | Git branches, panel slices, demo tags |
+| [`docs/SCALE.md`](docs/SCALE.md) | Load-balance readiness (optional Compose) |
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | Clinical & operational workflow |
 | [`docs/USAGE_GUIDE.md`](docs/USAGE_GUIDE.md) | Usage guide for all user types |
 | [`DEVELOPMENT_PLAN.md`](DEVELOPMENT_PLAN.md) | Product & engineering plan |

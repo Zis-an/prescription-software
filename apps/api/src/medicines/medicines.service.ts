@@ -3,6 +3,10 @@ import { User } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { BulkRankingDto, SearchQueryDto, UpdateRankingDto } from "./dto/medicine.dto";
 
+// TODO(dgda-auto-import): Add sync endpoint/job so new DGDA products upsert into
+// `medicines` without a full manual re-seed. Ranking (boost_score / search_rank) should
+// be preserved for rows admins already tuned.
+
 @Injectable()
 export class MedicinesService {
   constructor(private readonly prisma: PrismaService) {}

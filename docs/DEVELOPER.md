@@ -4,7 +4,7 @@
 **Product:** Unified Clinical Practice Platform for Bangladesh  
 **Tagline:** One Doctor. One Patient Record. Every Chamber.  
 **Status:** Phase 0 foundation — NestJS/PostgreSQL API + multi-role panels + Electron doctor prototype  
-**Last reviewed:** 2026-11-25  
+**Last reviewed:** 2026-11-26  
 
 > **Keep this document current.** After any meaningful change (new module, DB wiring, IPC, schema, dependency, or runtime path), update the narrative sections below **and** run `python scripts/sync-developer-doc.py`. Cursor agents are instructed to do this automatically via `.cursor/rules/update-developer-doc.mdc`.
 
@@ -13,8 +13,9 @@ Related docs:
 | Doc | Purpose |
 |---|---|
 | [`DEVELOPMENT_PLAN.md`](../DEVELOPMENT_PLAN.md) | Product SDP — pillars, roadmap, proposed stack |
+| [`LOCAL_SETUP.md`](./LOCAL_SETUP.md) | Native PostgreSQL setup (Docker not required) |
 | [`BRANCHING.md`](./BRANCHING.md) | Git branches, panel slices, `demo/*` tags |
-| [`SCALE.md`](./SCALE.md) | 200k-user load-balance architecture + harness |
+| [`SCALE.md`](./SCALE.md) | Load-balance readiness (optional Compose) |
 | [`WORKFLOW.md`](./WORKFLOW.md) | Clinical / operational workflows |
 | [`USAGE_GUIDE.md`](./USAGE_GUIDE.md) | How each user type uses the product |
 | [`apps/api/README.md`](../apps/api/README.md) | API + seed accounts |
@@ -28,7 +29,7 @@ Related docs:
 
 Clinical OS is an **offline-first clinical practice platform** aimed at Bangladeshi private chambers: fast prescribing, multi-chamber patient history, DGDA drug search, CDSS alerts, RBAC for assistants, and print/digital Rx share.
 
-This repository is a **logical multi-folder monorepo** (not a root npm workspace). **PostgreSQL** is the primary shared database (Docker Compose). The **NestJS API** (`apps/api`) provides JWT RBAC for six roles and Super Admin–controlled medicine search ranking. Role-specific Vite panels live under `apps/web-*`. The Electron desktop app still hosts the doctor HTML prototype (localStorage demo EHR) with an **optional** API bridge for ranked drug search. Full offline SQLite sync and production OTP/BM&DC remain planned.
+This repository is a **logical multi-folder monorepo** (not a root npm workspace). **PostgreSQL** (native local install by default) is the primary shared database. The **NestJS API** (`apps/api`) provides JWT RBAC for six roles and Super Admin–controlled medicine search ranking. Role-specific Vite panels live under `apps/web-*`. The Electron desktop app still hosts the doctor HTML prototype (localStorage demo EHR) with an **optional** API bridge for ranked drug search. Docker Compose is **optional** and not required for day-to-day work. Full offline SQLite sync and production OTP/BM&DC remain planned.
 
 ---
 
@@ -40,7 +41,7 @@ This repository is a **logical multi-folder monorepo** (not a root npm workspace
 4. **Doctor prototype** wired with `demo-db.js` (localStorage EHR) + DGDA formulary import (`scripts/import-dgda-medicines.py` → `data/dgda-drugs.js`, ~49,826 products).
 5. **Electron shell** implemented in `apps/desktop` (TypeScript main/preload) that loads the doctor UI, exposes IPC, creates offline data directories, and packages Windows NSIS installers.
 6. **Docs** added under `docs/` (workflow, usage, Bengali PDFs via `scripts/md_to_pdf_bn.py`).
-7. **API foundation** — NestJS + Prisma + PostgreSQL, Docker Compose, Redis stub, Nginx LB profile, multi-role panels, Super Admin medicine ranking, k6 load harness.
+7. **API foundation** — NestJS + Prisma + PostgreSQL, multi-role panels, Super Admin medicine ranking, k6 load harness; optional Compose/Redis/Nginx retained for later.
 
 There is **no root `package.json`**. Each subproject installs independently. Desktop UI packaging remains **filesystem + Electron `extraResources`**. Panels talk to the API over HTTP/JWT.
 
@@ -51,8 +52,8 @@ There is **no root `package.json`**. Each subproject installs independently. Des
 ```
 prescription/
 ├── DEVELOPMENT_PLAN.md          # Product & engineering SDP
-├── docker-compose.yml           # Postgres, Redis, API, Nginx
-├── docker-compose.scale.yml     # 2× API replicas
+├── docker-compose.yml           # Optional later stack (not required)
+├── docker-compose.scale.yml     # Optional scale profile
 ├── apps/
 │   ├── api/                     # ★ NestJS + Prisma API
 │   ├── desktop/                 # Electron doctor shell
@@ -108,11 +109,11 @@ Full workflow: [`docs/BRANCHING.md`](./BRANCHING.md).
 | Packaging | electron-builder `^25.1.8` (Windows NSIS) | `apps/desktop/package.json` `build` |
 | Doctor UI | Vanilla HTML5 / CSS / IIFE JS | `app-templates/frontend/clinical-os-doctor/` |
 | Demo persistence (doctor) | `localStorage` (`clinicalos.demo.v1`) | `demo-db.js` |
-| Shared clinical DB | PostgreSQL (Docker volume `pgdata`) | `docker-compose.yml` |
+| Shared clinical DB | PostgreSQL (native local; optional Compose) | `.env` `DATABASE_URL` · [`LOCAL_SETUP.md`](./LOCAL_SETUP.md) |
 | Drug KB (API) | `medicines` table + ranking | Prisma `Medicine` |
 | Drug KB (offline pack) | In-memory columnar JS (~50k rows) | `data/dgda-drugs.js` |
-| Cache/jobs stub | Redis 7 | Compose service |
-| LB | Nginx least_conn (scale profile) | `infra/nginx/` |
+| Cache/jobs stub | Redis (optional; not required to boot API) | `.env` `REDIS_URL` commented by default |
+| LB | Nginx least_conn (optional scale profile) | `infra/nginx/` |
 | Load tests | k6 | `loadtest/` |
 | Print kit | JSON Schema + vanilla `PadRender` | `templates/` |
 | Node requirement | `>=20` | api + desktop `engines` |
@@ -235,13 +236,15 @@ Security defaults: `contextIsolation: true`, `nodeIntegration: false`, `sandbox:
 
 | Item | Value |
 |---|---|
-| Engine | PostgreSQL 16 (Docker image `postgres:16-alpine`) |
-| Connection | `DATABASE_URL` in root `.env` / Compose |
+| Engine | PostgreSQL 16+ (native install recommended; Compose image optional) |
+| Connection | `DATABASE_URL` in root `.env` |
 | ORM / migrations | Prisma — `apps/api/prisma/schema.prisma` + `prisma/migrations/` |
-| Create / migrate | `docker compose up` runs `prisma migrate deploy` then `prisma db seed` |
-| Locate data (Docker) | Named volume `pgdata` (`docker volume inspect prescription_pgdata` or project-prefixed name) |
+| Create DB | `scripts/setup-local-db.ps1` or SQL in [`LOCAL_SETUP.md`](./LOCAL_SETUP.md) |
+| Migrate / seed | `npx prisma migrate deploy` then `npx prisma db seed` from `apps/api` |
 | Locate locally | `localhost:5432`, DB `clinicalos`, user `clinicalos` (see `.env.example`) |
-| Extensions | `pg_trgm`, `uuid-ossp` via `infra/postgres/init.sql` |
+| Extensions | `pg_trgm`, `uuid-ossp` (setup script / `infra/postgres/init.sql`) |
+
+**TODO(dgda-auto-import):** Automate DGDA → `medicines` upsert + offline pack refresh when new drugs are published (preserve Super Admin ranking).
 
 **Core tables:** `users`, `chambers`, `user_chambers`, `patients`, `medicines` (`search_rank`, `boost_score`), `prescriptions`, `medication_lines`, `queue_items`, `audit_logs`, `org_settings`.
 
@@ -362,7 +365,8 @@ Workbench integration with this kit is a **next step**.
 | JWT RBAC (6 roles) | Done |
 | SUPER_ADMIN medicine ranking | Done |
 | Admin / Assistant / Patient / Pharmacy panels | Done (foundation) |
-| Docker Compose + Nginx scale profile | Done |
+| Local Postgres + Nest API (no Docker required) | Done |
+| Optional Compose + Nginx scale profile | Available (optional) |
 | k6 load-test harness | Done |
 | Offline `db/cache/outbox` folders | Dirs only (desktop) + **localStorage sync outbox** |
 | Online/offline sync engine | Done (foundation) — `sync-engine.js` + `POST /sync/push` |
@@ -376,11 +380,12 @@ Workbench integration with this kit is a **next step**.
 ## 10. Entry points & common commands
 
 ```bash
-# Stack (Docker)
-cp .env.example .env
-docker compose up --build -d
+# Local DB (once) — see docs/LOCAL_SETUP.md
+# powershell -File scripts/setup-local-db.ps1
 
-# API local
+cp .env.example .env
+
+# API (native Postgres; no Docker)
 cd apps/api && npm install && npx prisma migrate deploy && npx prisma db seed && npm run start:dev
 
 # Panels
@@ -389,7 +394,7 @@ cd apps/web-admin && npm install && npm run dev
 # Desktop
 cd apps/desktop && npm install && npm run dev
 
-# Load test
+# Load test (API already running)
 k6 run loadtest/k6-smoke.js
 
 # Regenerate DGDA pack / docs
@@ -457,9 +462,11 @@ Update the **narrative** sections (not only run the script) if you:
 <!-- AUTO:CHANGELOG:START -->
 | Date | Change |
 |---|---|
+| 2026-11-26 | Native Postgres default; Docker optional; DGDA auto-import TODO |
 | 2026-11-25 | Remove unused vendor kits and generated duplicates |
 | 2026-11-25 | Document Git branching and panel slices |
-| 2026-11-25 | Docker stack running; fixed API seed/entrypoint for Nest dist/src/main.js |
+| 2026-11-26 | Default runtime = native Postgres (no Docker required); TODO(dgda-auto-import) tagged |
+| 2026-11-25 | Docker stack available as optional path; fixed API seed/entrypoint for Nest dist/src/main.js |
 | 2026-11-24 | Desktop packages Admin/Assistant/Patient/Pharmacy panels via Panels menu + extraResources |
 | 2026-11-24 | Online/offline sync engine: localStorage outbox, health probe, POST /sync/push, live sync chip |
 | 2026-11-24 | NestJS PostgreSQL API, multi-role panels, Super Admin medicine ranking, Docker LB + k6 harness |
@@ -483,7 +490,7 @@ Append a row (or let the sync script prepend one with `--note "..."`) for each m
 <!-- AUTO:SNAPSHOT:START -->
 _Generated snapshot — regenerated by `scripts/sync-developer-doc.py`._
 
-- Snapshot time (UTC): `2026-11-25T09:03:11Z`
+- Snapshot time (UTC): `2026-11-26T07:18:45Z`
 - Desktop package name/version: `clinical-os-desktop@0.1.0`
 - Electron: `^33.2.1`
 - TypeScript: `^5.7.2`
