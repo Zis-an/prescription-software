@@ -4,17 +4,32 @@
 
 ## 1. Install PostgreSQL
 
-### Windows (winget)
+### Windows
+
+**Recommended:** install the official Windows installer (run as Administrator):
+
+https://www.postgresql.org/download/windows/
+
+Or EnterpriseDB direct (example version):
+
+https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+
+During setup:
+- Keep port **5432**
+- Set a **postgres** superuser password you will remember (local learning only)
+- Install Command Line Tools so `psql` is available
+
+Add `psql` to PATH if needed (typical):
+
+`C:\Program Files\PostgreSQL\17\bin`
+
+Ensure the Windows service is running (Services → `postgresql-x64-17` or similar).
+
+Optional winget (sometimes blocked by CDN 403):
 
 ```powershell
 winget install --id PostgreSQL.PostgreSQL.17 -e --accept-package-agreements --accept-source-agreements
 ```
-
-During/after install, note the `postgres` superuser password you set. Ensure the service is running (Services → `postgresql-x64-17` or similar).
-
-Add `psql` to PATH if the installer did not (typical):
-
-`C:\Program Files\PostgreSQL\17\bin`
 
 ### Verify
 
